@@ -61,6 +61,7 @@ Git repo riêng, nhánh `main`, chưa có commit và chưa có remote (đợi TV
 | `context/git-workflow.md` | Branch/commit REPO, .gitignore đề xuất, checklist push, quy tắc worktree, chép .env, đồng bộ máy |
 | `deliverables/session-log.md` | Nhật ký phiên (append ở cuối) |
 | `deliverables/handoff/2026-11-27-tv2-transfer-risk-contract.md` | Handoff T-06c cho TV2: models, error envelope, 12 fixture, K04 v2, câu hỏi K02/K03/K04/K06/K09–K11 |
+| `deliverables/handoff/2026-11-27-tv2-transfer-risk-endpoint-live.md` | Handoff TV2: endpoint chạy thật (12/12 golden), OpenAPI mới, mã lỗi, `X-Request-Id`, hành vi response, lưu ý name inquiry mock là demo |
 | `deliverables/handoff/2026-11-27-tv1-contracts-and-claim-context.md` | Handoff T-06c cho TV1: models dùng chung, C7–C9 reserved, K04 v2, câu hỏi K01/K04/K06–K08/K11 |
 | `deliverables/handoff/2026-11-27-tv1-recipient-key-and-normalisation.md` | Handoff TV1 cho T-07/T-08/T-09: hàm `fw_common`, quy tắc K01, bảng map lỗi, 4 vector hồi quy, câu hỏi K01 |
 | `deliverables/handoff/2026-11-27-k04-d048-claim-pairing.md` | Handoff TV1 + TV2: K04 D-048 (miễn C3 khi khớp official, ghép cặp claim–tài khoản), bảng ca đổi kết quả, 12 golden không đổi |
@@ -127,6 +128,14 @@ Git repo sản phẩm, remote `github.com/ThanhNhanNguyen2508/FraudWaveAI-Momo` 
 | `src/fraudweave/registry/repository.py` | `find_org_by_claim` (khớp chính xác sau `normalize_text`, trùng 2 org → None), `get_org`, `get_group_trust`; trả dataclass frozen (T-16) |
 | `src/fraudweave/evidence/repository.py` | `lookup_account_evidence`: bỏ retracted/hết hạn; simulation chỉ tính ở `mode=demo` (như verified, `demo_data_used`); top 3 record (T-16) |
 | `tests/unit/test_seed.py`, `test_repositories.py` | T-15/T-16 (phần DB cần `FW_TEST_DATABASE_URL`); `tests/conftest.py` có fixture `test_database_url`, `alembic_config`, `clean_db` dùng chung |
+| `data/mock/name_inquiry.json` | Name inquiry mock: 5 tài khoản synthetic (STK `999000…`) → `holder_type`; không có trong file = `unknown` (T-18) |
+| `src/fraudweave/safetransfer/name_inquiry_mock.py` | `NameInquiryMock.from_file` (pydantic, tính key trong bộ nhớ), `UNKNOWN_HOLDER` (T-18) |
+| `src/fraudweave/safetransfer/claim_providers.py` | `resolve_declared_claim`, `resolve_claim` (screening_id thắng, lạ/hết hạn → bỏ qua + `screening_expired`), `InMemoryScreeningCache` stub K07 (T-18) |
+| `src/fraudweave/safetransfer/service.py` | `TransferRiskService.assess`: normalise → claim → evidence → name inquiry → `decide` → response + audit; lỗi DB = `ApiError` 503 (T-19) |
+| `src/fraudweave/config.py` | `Settings.from_env` (DATABASE_URL, FW_HMAC_KEY, API_KEYS, FW_NAME_INQUIRY_FILE tuỳ chọn), `parse_api_keys`, `client_for_key` so sánh hằng thời gian; secret không hiện trong repr (T-19) |
+| `src/fraudweave/api/deps.py`, `routers/transfer.py` | `require_api_key` (`X-API-Key`), `get_service` dựng lười (thiếu cấu hình = 500, không có verdict), `POST /v1/transfer-risk`; `api/main.py` có `create_app(settings, service)` (T-19) |
+| `tests/golden/test_transfer_golden.py` | 12 golden qua HTTP trên Postgres thật (Gate G1: G1, R1, Y1, E1) (T-19) |
+| `tests/unit/test_{claim_providers,name_inquiry_mock,transfer_service,config}.py`, `tests/contract/test_transfer_endpoint.py` | T-18/T-19: alias chính xác, mock, service + audit + privacy + fail-closed, auth/envelope |
 | `.gitkeep` | Thư mục chưa dùng: `contracts/fixtures/normalize`, `src/fraudweave/integrations`, `web/safetransfer-check`, `tests/golden` |
 
 Chưa có (theo PLAN): `.worktreeinclude`, `scripts/new_worktree.ps1`, `check_prepush.ps1` (T-04b).

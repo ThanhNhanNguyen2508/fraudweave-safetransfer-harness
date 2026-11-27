@@ -92,6 +92,7 @@ Chưa có tài liệu deploy riêng (K12 còn PENDING), nên checklist này nằ
 2. Database live chỉ chứa dữ liệu thật có `source_url` (org) hoặc ghi qua ingestion; không có hàng `is_synthetic = true`. Kiểm: `SELECT count(*) FROM orgs WHERE is_synthetic` (và `groups`, `evidence`) phải bằng 0.
 3. Không dựa vào giả định dải STK `999000…` không trùng STK thật.
 4. Demo (`mode=demo`) dùng database riêng hoặc môi trường riêng đã nạp seed.
+5. **Name Inquiry Mock** (`data/mock/name_inquiry.json`) chỉ là dữ liệu demo/test, không phải nguồn xác minh ở production (D-050). Hiện service nạp nó ở mọi môi trường; trước khi chạy live phải tắt hoặc thay bằng nguồn thật (task triển khai K12/T-35), nếu không `holder_type` có thể bị gắn nhãn sai.
 
 ## 5. Chạy song song bằng git worktree
 
