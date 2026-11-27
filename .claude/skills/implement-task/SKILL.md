@@ -18,7 +18,8 @@ REPO = `C:\Users\Dell\Downloads\MomoTechDay\Implements\Source code-SafeTransfer\
 5. **Chạy kiểm tra** trong REPO: `uv run pytest`, `uv run ruff check .`, `uv run ruff format --check .`. Fail thì sửa; không báo pass khi chưa chạy.
 6. **Cập nhật harness:** `PLAN.md` (trạng thái theo `definition-of-done.md`), `MAP.md` (file mới/xoá/di chuyển), `CONTRACT_STATUS.md` (nếu thêm marker hoặc đổi DRAFT), `context/decisions.md` (nếu có quyết định), `deliverables/session-log.md`.
 7. **Không commit, không push.** Cho TV3 xem `git status`, diff chính và output test.
-8. **Tóm tắt đúng 5 dòng:**
+8. **Gọi `code-reviewer` review diff, rồi mới báo TV3** (agent chạy Opus, rule `model-routing.md`). Sửa các blocker/should-fix hợp lý và chạy lại bước 5; phát hiện nào không sửa thì nêu rõ lý do. Task rủi ro cao (T-17, T-07a, T-24) mà phiên đang Sonnet: nhắc TV3 dùng `/model` chuyển Opus ngay từ đầu task (đừng tự đổi).
+9. **Tóm tắt đúng 5 dòng** (kèm kết luận của code-reviewer ở dòng "Test"):
    - Task: T-xx, trạng thái mới
    - Đã làm: ...
    - File đổi: ...

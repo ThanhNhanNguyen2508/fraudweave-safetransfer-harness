@@ -28,10 +28,10 @@
 | **Contradiction** | Mâu thuẫn tìm thấy, có `code` C1–C9, `severity` (C1–C6 = hard, C7–C9 = soft), `reason_code`, `message_vi`, `evidence_ids` |
 | **C1, C4** | Hard contradiction thuộc phía Guardian. Định nghĩa [CHƯA CÓ TRONG SOURCES] |
 | **C2** `payee_not_official_account` | Claim trỏ tới org trong registry (hoặc group có `payment_policy = declared_accounts_only` và role teacher/treasurer/admin), nhưng tài khoản không khớp official/declared |
-| **C3** `personal_holder_for_org_claim` | Claim là org hoặc role `org_staff`/`bank_staff`/`police`, nhưng name inquiry (mock) trả `holder_type = personal` |
+| **C3** `personal_holder_for_org_claim` | `holder_type = personal` **và** (claim resolve được tới org trong registry **hoặc** `claimed_role` ∈ org_staff / bank_staff / police). Org không resolve được tự nó không bắn C3; `unknown` không bao giờ bắn C3 (D-036) |
 | **C5** `confirmed_indicator` | Có ≥ 1 evidence **verified** còn hạn trên tài khoản |
-| **C6** `org_never_asks_transfer` | `never_asks` của tổ chức được claim có chứa hành động này (ví dụ công an yêu cầu chuyển tiền vào "tài khoản an toàn") |
-| **C7–C9** | Tín hiệu mềm (soft) đến từ Guardian qua `screening_id`; ý nghĩa từng mã [CHƯA CÓ TRONG SOURCES] |
+| **C6** `org_never_asks_transfer` | `never_asks` của tổ chức được claim có chứa token `transfer` (MVP chỉ hỗ trợ token này, D-038), ví dụ công an yêu cầu chuyển tiền vào "tài khoản an toàn" |
+| **C7–C9** | Tín hiệu mềm (soft) đến từ Guardian qua `screening_id`; ý nghĩa từng mã [CHƯA CÓ TRONG SOURCES]. **Reserved, không ảnh hưởng verdict SafeTransfer MVP** (D-039) |
 
 ## Verdict và policy
 
@@ -42,7 +42,7 @@
 | **Xanh** | Chỉ khi khớp official/declared account. **Không bao giờ dùng chữ "an toàn"**. Không có claim thì không thể Xanh |
 | **Xám** | Không có dữ liệu. Copy: "Chưa có dữ liệu về tài khoản này — điều này không có nghĩa là an toàn." |
 | **Decision table** | Bảng luật có thứ tự, first match wins (SPEC.md §4). Nằm trong `safetransfer/policy.py` |
-| **`policy_version`** | Phiên bản policy trả trong mọi response, hiện là `st-policy-0.1` |
+| **`policy_version`** | Phiên bản policy trả trong mọi response, hiện là `st-policy-0.1` (bảng v2 từ T-17: `st-policy-0.2`, D-041) |
 | **`registry_conflict`** | Tài khoản khớp official/declared **nhưng** có evidence verified → Vàng và đưa vào review |
 | **Report poisoning** | Báo cáo giả để bôi nhọ tài khoản hợp lệ. Chặn bằng quy tắc: báo cáo chưa xác minh tối đa chỉ lên Vàng |
 | **`match_official` / `match_declared`** | `recipient_key` nằm trong `official_account_keys` của org / trong declared fund accounts của group |

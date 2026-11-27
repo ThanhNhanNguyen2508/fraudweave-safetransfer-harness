@@ -1,6 +1,6 @@
 # MAP — bản đồ 3 thư mục
 
-> Cập nhật mỗi khi tạo, xoá hoặc di chuyển file ở **bất kỳ** thư mục nào. Lần cuối: 2026-11-25 (phiên 4). Chỉ Claude Code sửa file này; Codex đề xuất qua `deliverables/codex-inbox/`.
+> Cập nhật mỗi khi tạo, xoá hoặc di chuyển file ở **bất kỳ** thư mục nào. Lần cuối: 2026-11-27. Chỉ Claude Code sửa file này; Codex đề xuất qua `deliverables/codex-inbox/`.
 > Gốc: `C:\Users\Dell\Downloads\MomoTechDay\Implements\`
 
 ## Tìm / lưu thông tin ở đâu
@@ -46,6 +46,7 @@ Git repo riêng, nhánh `main`, chưa có commit và chưa có remote (đợi TV
 | `.claude/rules/coding-standards.md` | Python 3.11, FastAPI, Pydantic v2, ruff, pytest, type hints |
 | `.claude/rules/definition-of-done.md` | Điều kiện để task được đánh `done` |
 | `.claude/rules/git-permissions.md` | Agent chỉ được `git status/diff/log`; không add/commit/push/gh (D-017) |
+| `.claude/rules/model-routing.md` | Phân vai Sonnet/Opus, task rủi ro cao, không tự đổi model (D-030) |
 | `.claude/skills/implement-task/SKILL.md` | Quy trình làm một task T-xx |
 | `.claude/skills/contract-audit/SKILL.md` | Đối chiếu marker PENDING trong REPO với CONTRACT_STATUS |
 | `.claude/skills/add-golden-case/SKILL.md` | Thêm golden case (fixture + seed + test) |
@@ -82,10 +83,21 @@ Git repo sản phẩm, remote `github.com/ThanhNhanNguyen2508/FraudWaveAI-Momo` 
 | `src/fraudweave/__init__.py` | `__version__` (nguồn version duy nhất) |
 | `src/fraudweave/api/main.py` | `create_app()` + mount router dưới `/v1` |
 | `src/fraudweave/api/routers/health.py` | `GET /v1/health` → `{status, app_version}` |
+| `src/fraudweave/common/contracts.py` | Pydantic contracts §4.2 + transfer-risk (K03) + evidence (K05); marker K06/K07 (T-05) |
+| `src/fraudweave/api/errors.py` | Error envelope §7: `ApiError`, `ErrorCode`, handlers (T-05) |
+| `src/fraudweave/api/openapi.py` | Sinh OpenAPI kèm mọi contract model (T-05) |
+| `scripts/export_openapi.py` | Ghi `contracts/openapi.json`; `--check` để kiểm drift (T-05) |
+| `contracts/openapi.json` | OpenAPI sinh tự động (T-05) |
+| `tests/contract/test_{models,errors,openapi,privacy}.py` | Contract tests T-05 (privacy: STK thô không lọt vào log/response/error) |
+| `src/fraudweave/common/golden.py` | Model `GoldenCase`/`GoldenExpected` + `load_golden_cases()` cho golden fixtures (T-06) |
+| `contracts/fixtures/transfer/*.json` | 12 golden case G1, G2, R1–R4, A1–A4, Y1, E1 (A4 ngoài contract §8, proposed D-040); có `*_forbidden`, `evidence_verified_min` (synthetic, STK dải `999000…`; A3 dùng A′ `9990000000010` để không trùng request G1), expected dạng "phải chứa" (T-06) |
+| `contracts/CONTRACT_STATUS.md` | Bản sao gọn K01–K12 (tiếng Anh) cho đồng đội + ghi chú K03 cho consumer (T-06) |
+| `tests/contract/test_fixtures_schema.py` | Fixture parse được, khớp bảng golden, bất biến "Xanh cần claim", bản sao status khớp marker (T-06) |
+| `.gitattributes` | `contracts/**/*.json` luôn LF (test so byte của openapi.json) |
 | `tests/unit/test_health.py` | 2 test cho health |
-| `.gitkeep` | Thư mục chưa dùng: `contracts/fixtures/{normalize,qr,transfer}`, `src/fraudweave/{common/vietqr,safetransfer,evidence,registry,storage,integrations}`, `migrations`, `data/seed`, `web/safetransfer-check`, `scripts`, `tests/{contract,golden}`, `docs` |
+| `.gitkeep` | Thư mục chưa dùng: `contracts/fixtures/{normalize,qr}`, `src/fraudweave/{common/vietqr,safetransfer,evidence,registry,storage,integrations}`, `migrations`, `data/seed`, `web/safetransfer-check`, `tests/golden`, `docs` |
 
-Chưa có (theo PLAN): `common/contracts.py` + `openapi.json` (T-05), `contracts/CONTRACT_STATUS.md` (T-06), `.worktreeinclude`, `scripts/new_worktree.ps1`, `check_prepush.ps1` (T-04b), `docs/vietqr-spec-notes.md` (T-07a).
+Chưa có (theo PLAN): `.worktreeinclude`, `scripts/new_worktree.ps1`, `check_prepush.ps1` (T-04b), `docs/vietqr-spec-notes.md` (T-07a).
 
 ## 3. SANDBOX — `Test-for-agent\`
 

@@ -43,6 +43,7 @@
 @.claude/rules/coding-standards.md
 @.claude/rules/definition-of-done.md
 @.claude/rules/git-permissions.md
+@.claude/rules/model-routing.md
 
 ## Nhắc nhanh những điều không được làm
 - Không viết code sản phẩm trong HARNESS. Không sửa `sources/`.

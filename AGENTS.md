@@ -82,6 +82,16 @@ Chi tiết: `context/git-workflow.md`.
 | Gợi ý commit message cuối phiên | ✅ | ✅ (trong ghi chú inbox) |
 | `git add` / `commit` / `push`, lệnh `gh` | ❌ (TV3 tự làm) | ❌ (TV3 tự làm) |
 
+## 7c. Phân vai model (D-030)
+
+Chi tiết: `.claude/rules/model-routing.md`.
+
+- **Sonnet:** implement task theo PLAN (skill `implement-task`).
+- **Opus:** review diff, contract audit, kiểm tra trước gate, lập kế hoạch, quyết định khi gặp điểm mơ hồ.
+- **Task rủi ro cao** (T-17 policy, T-07a, nhãn eval T-24): Opus viết, hoặc Opus review kỹ.
+- `code-reviewer` và `contract-auditor` chạy Opus. Cuối `implement-task` luôn gọi `code-reviewer` trước khi báo TV3.
+- **Agent không tự đổi model của phiên.** Task cần Opus mà phiên đang Sonnet thì dừng và nhắc TV3 dùng `/model`. (Codex: áp dụng cùng tinh thần, tự ghi vào inbox nếu thấy cần Opus review.)
+
 ## 8. Ngôn ngữ
 
 - Trả lời TV3 bằng **tiếng Việt**, giữ nguyên thuật ngữ kỹ thuật tiếng Anh.

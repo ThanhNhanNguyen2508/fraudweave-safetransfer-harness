@@ -8,11 +8,11 @@
 | --- | --- | --- | --- | --- | --- |
 | K01 | Quy tắc normalise STK/bank, công thức `recipient_key` | DRAFT-TV3 | TV1 (xác nhận import `fw_common`) | Không cần stub. Dự kiến `src/fraudweave/common/normalize.py`, `hashing.py` (chưa có code) | 2026-11-25 |
 | K02 | VietQR parse/encode/decode + `POST /v1/qr/decode` | DRAFT-TV3 | TV2 (định dạng upload ảnh) | Dự kiến `common/vietqr/*`, `api/routers/qr.py`; tạm nhận multipart image (chưa có code) | 2026-11-25 |
-| K03 | `POST /v1/transfer-risk` request/response | DRAFT-TV3 | TV2 (trường UI cần hiển thị) | Dự kiến `common/contracts.py`, `api/routers/transfer.py` (chưa có code) | 2026-11-25 |
-| K04 | Decision table Đỏ/Vàng/Xám/Xanh | DRAFT-TV3 | Cả nhóm: `amount_band` có đổi verdict không; group mismatch hard hay soft | Dự kiến `safetransfer/policy.py`; mặc định theo SPEC §4 (amount không đổi verdict, group mismatch = hard C2) (chưa có code) | 2026-11-25 |
-| K05 | Evidence schema + `POST /v1/evidence` | DRAFT-TV3 | — | Dự kiến `evidence/ingestion.py`, `api/routers/evidence.py` (chưa có code) | 2026-11-25 |
-| K06 | Trường evidence gửi từ Guardian / mod confirm / nút Báo cáo | PENDING-NEED-CONFIRM-CONTRACT | TV1, TV2 | Dự kiến `integrations/guardian_adapter.py` (interface + stub), dùng tạm payload contract §5.3 (chưa có code) | 2026-11-25 |
-| K07 | Claim context từ Discord (`screening_id`, cache 30 phút, `ClaimContext`) | PENDING-NEED-CONFIRM-CONTRACT | TV1 | Dự kiến `safetransfer/claim_providers.py` + screening cache stub in-memory (chưa có code) | 2026-11-25 |
+| K03 | `POST /v1/transfer-risk` request/response | DRAFT-TV3 | TV2 (trường UI cần hiển thị) | Models trong `common/contracts.py` (T-05, chưa commit); router `api/routers/transfer.py` chưa có (T-19). `holder_type` ∈ personal/organization/unknown (D-031); `reason_codes: list[str]` + `demo_data_used` trong response (D-032, sẽ thành enum: báo TV2); 422 chỉ cho lỗi nhập sai, còn lại 400 (D-033, lệch mặc định FastAPI: báo TV2); request `forbid`, response `ignore` (D-034) | 2026-11-26 |
+| K04 | Decision table Đỏ/Vàng/Xám/Xanh | DRAFT-TV3 | Cả nhóm: `amount_band` có đổi verdict không; group mismatch hard hay soft | **Bảng MVP v2 proposed** (D-035…D-039): thứ tự mới, C3 cần org resolve hoặc role, C6 chỉ token `transfer`, bỏ C7–C9 khỏi verdict (reserved). Chờ TV1/TV2 duyệt qua handoff T-06c; chưa có code (`safetransfer/policy.py`, T-17) | 2026-11-27 |
+| K05 | Evidence schema + `POST /v1/evidence` | DRAFT-TV3 | — | Models `EvidenceCreateRequest/Response` trong `common/contracts.py` (T-05); `evidence/ingestion.py`, router chưa có | 2026-11-26 |
+| K06 | Trường evidence gửi từ Guardian / mod confirm / nút Báo cáo | PENDING-NEED-CONFIRM-CONTRACT | TV1, TV2 | Dự kiến `integrations/guardian_adapter.py` (interface + stub), dùng tạm payload contract §5.3. Marker K06 ở `EvidenceCreateRequest` trong `common/contracts.py`; adapter chưa có | 2026-11-26 |
+| K07 | Claim context từ Discord (`screening_id`, cache 30 phút, `ClaimContext`) | PENDING-NEED-CONFIRM-CONTRACT | TV1 | Dự kiến `safetransfer/claim_providers.py` + screening cache stub in-memory. Marker K07 ở `ClaimContext` và `TransferRiskRequest.screening_id` trong `common/contracts.py`; provider/cache chưa có | 2026-11-26 |
 | K08 | `POST /v1/screen` | PENDING-NEED-CONFIRM-CONTRACT | TV1 (owner) | TV3 không implement; chỉ chừa chỗ mount router trong app shell (chưa có code) | 2026-11-25 |
 | K09 | Payload Group Trust từ `/setup` | PENDING-NEED-CONFIRM-CONTRACT | TV2 | Dự kiến `api/routers/groups.py` theo contract §5.4 làm bản tạm (chưa có code) | 2026-11-25 |
 | K10 | Handoff nút "Chuyển khoản" → simulator (truyền `screening_id`) | PENDING-NEED-CONFIRM-CONTRACT | TV2 | Phía TV3: `screening_id` optional trong request `transfer-risk`; web Check nhận qua query param [GIẢ ĐỊNH] (chưa có code) | 2026-11-25 |
@@ -25,7 +25,9 @@
 | --- | --- |
 | `amount_band` có bao giờ đổi verdict (ví dụ Xám → Vàng khi > 50M) hay chỉ đổi lời khuyên? | K04 |
 | Group `declared_accounts_only` mismatch là hard (Đỏ) hay soft (Vàng) khi role được claim không phải anchor? | K04, K09 |
-| Xanh có thắng tín hiệu mềm C7–C9 không? (hiện tại: có, vì luật 3 đứng trước luật 4) | K04 |
+| ~~Xanh có thắng tín hiệu mềm C7–C9 không?~~ Đã gác: C7–C9 bỏ khỏi verdict MVP (D-039). **Chờ TV1/TV2 xong rồi mới chốt có implement thêm C7–C9 không** | K04, K07 |
+| ~~Org không resolve + role org_staff/bank_staff/police + personal~~ TV3 chốt: C3 bắn theo nhánh role (D-041); vẫn thuộc bảng v2 proposed, chờ nhóm | K04 |
+| `never_asks` cần trường phạm vi áp dụng (role/kênh/loại giao dịch) không? MVP: không, `transfer` áp cho mọi yêu cầu (D-038) | K04, registry |
 | Ai được retract evidence trong demo: chỉ admin TV3 hay cả server mod? | K05, K06 |
 | Engine TV1 đọc Postgres qua repository của TV3, hay cache in-process nạp lúc khởi động? | K08, K11 |
 | Một FastAPI app cho cả hai tính năng hay hai process? | K11 |
@@ -36,3 +38,8 @@
 | Ngày | ID | Từ → Sang | Ai | Ghi chú |
 | --- | --- | --- | --- | --- |
 | 2026-11-25 | K01–K12 | — → trạng thái khởi tạo | TV3 | Lấy từ brief §6 |
+| 2026-11-26 | K03, K05, K06, K07 | giữ nguyên trạng thái | agent | T-05: thêm models + marker K06/K07; chưa đổi nhãn |
+| 2026-11-27 | K03 | DRAFT-TV3 (giữ) | TV3 | Duyệt D-031…D-034 cho T-05; cần báo TV2: reason_codes sẽ thành enum, mapping 422/400 |
+| 2026-11-27 | K01–K12 | giữ nguyên | agent | T-06: tạo bản sao gọn `REPO/contracts/CONTRACT_STATUS.md`; test `test_fixtures_schema.py` bắt mọi marker PENDING trong `src/` phải là PENDING trong bản sao |
+| 2026-11-27 | K04 | DRAFT-TV3 (giữ), bảng v2 **proposed** | TV3 | D-035…D-040; đưa vào handoff T-06c cho TV1/TV2; chưa freeze |
+| 2026-11-27 | K04 | DRAFT-TV3 (giữ), v2 proposed | TV3 | D-041: C3 nhánh role, A3 không cấm `matches_official_account`, `st-policy-0.2` |

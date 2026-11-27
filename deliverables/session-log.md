@@ -33,3 +33,28 @@
 - Kiểm chứng: uv 0.13.10; `uv run pytest -W error` 2 pass; `ruff check` + `ruff format --check` sạch; `uv run uvicorn ... --factory` → `/v1/health` 200; `git check-ignore uv.lock` không khớp (không bị ignore).
 - Ghi chú: uv cài qua winget nhưng shell của agent chưa nạp PATH mới → gọi bằng đường dẫn đầy đủ; mở terminal mới là có `uv`.
 - Còn dở: TV3 commit T-04a trên `tv3/scaffold-repo`; tiếp theo T-05. Docker chờ tới T-14.
+
+## 2026-11-26 · Phiên 5 · D-030 phân vai model + T-05
+- Làm: D-030 (decisions), `.claude/rules/model-routing.md` (import từ CLAUDE.md), AGENTS §7c, MAP; `model: opus` cho code-reviewer + contract-auditor; implement-task thêm bước gọi code-reviewer trước khi báo. REPO: T-05 (contracts.py, errors.py, openapi.py, export_openapi.py, openapi.json, 3 file test contract), chưa commit.
+- Kiểm chứng: `model:` frontmatter nhận alias/ID/inherit theo tài liệu code.claude.com [ĐÃ XÁC MINH qua docs]; agent `code-reviewer` chưa nạp trong phiên đang chạy nên chưa thử thực tế [CHƯA KIỂM CHỨNG]; pytest 56 pass chỉ khi `--basetemp` (tmp_path bị PermissionError trong sandbox).
+- Còn dở: T-05 chờ TV3 duyệt rồi mới `done`; khởi động lại Claude Code để nạp agent Opus.
+- Câu hỏi mở: holder_type enum; recipient lỗi → 422 invalid_recipient (giả định); K06/K07 chỉ marker.
+
+## 2026-11-27 · Phiên 6 · T-05 chốt D-031…D-034
+- Làm: TV3 duyệt holder_type, reason_codes, 422/400, và đổi sang request `forbid` / response `ignore`, bỏ regex response. Thêm test unknown field (request từ chối, response bỏ qua) + `test_privacy.py`. 76 test pass, ruff + export_openapi --check sạch. Chưa commit.
+- Còn dở: báo TV2 (reason_codes sẽ thành enum; 422/400 lệch FastAPI). T-05 vẫn `doing` đến khi TV3 commit.
+- 2026-11-27: TV3 đã commit T-05 (REPO `2acf25c`); PLAN đánh T-05 `done`. Tiếp theo: T-06.
+
+## 2026-11-27 · Phiên 7 · T-06 golden fixtures (Opus)
+- Làm: REPO `common/golden.py` (GoldenCase/GoldenExpected, expected C-codes/reason codes dạng "phải chứa", verdict/action/status khớp chính xác), 11 fixture `contracts/fixtures/transfer/`, bản sao `contracts/CONTRACT_STATUS.md`, `tests/contract/test_fixtures_schema.py`, `.gitattributes` → `contracts/**/*.json`. Chưa commit, đang ở nhánh `tv3/scaffold-repo` (nên chuyển sang `tv3/contracts-*`, D-012).
+- Review Opus (general-purpose đọc `code-reviewer.md`): sửa A3 dùng A′ (trùng request G1), ghi holder_type của name inquiry mock trong setup, token `never_asks` = `personal_transfer`, test không trùng request + dải STK `999000`. 107 test pass, ruff + export_openapi --check sạch.
+- Phát hiện: phiên khởi động từ `Implements\` (không phải HARNESS) nên `.claude/agents` và `.claude/skills` của HARNESS không được nạp → `code-reviewer`/`implement-task` "not found" [GIẢ ĐỊNH mạnh]. Khởi động `claude` từ `Agent Workspace\`.
+- Câu hỏi mở (K04, chờ TV3): (1) C3 có xét khi claim org **không resolve** được không (A2 sẽ thành Đỏ nếu G là personal)? (2) A3 có liệt kê C5 trong `contradictions` không (reviewer khuyên không)? (3) token `never_asks`: `personal_transfer` (theo §5.5) hay `transfer` (§8)? (4) org có `never_asks` transfer → chính tài khoản official cũng ra Đỏ (luật 2 trước luật 3)?
+- Để sau: T-06b cần `example_response` hoặc mock tự dựng response; T-20 test đối chiếu setup ↔ seed.
+
+## 2026-11-27 · Phiên 7b · K04 bảng MVP v2 (Opus)
+- TV3 chốt: bảng v2 (D-035), C3 cần org resolve/role (D-036), detected vs effective (D-037), `never_asks` chỉ `transfer` (D-038), bỏ C7–C9 + pressure words khỏi verdict MVP, giữ reserved (D-039), fixture forbidden + golden A4 (D-040). Shared contract K04: **proposed**, đưa vào handoff T-06c; chưa freeze; chưa làm T-17.
+- **C7–C9: chờ TV1/TV2 xong rồi mới chốt có implement thêm không; TV3 sẽ tự nhắc lại.**
+- Sửa: SPEC §4/§5/§6, decisions, CONTRACT_STATUS (K04 + câu hỏi mở), PLAN (T-06c, T-17, T-20), glossary, MAP. REPO: `golden.py` (forbidden, `evidence_verified_min`), 12 fixture, test, comment reserved C7–C9 trong `contracts.py`, bản sao CONTRACT_STATUS. 118 test pass.
+- Câu hỏi mở mới: org không resolve + role org_staff/bank_staff/police + personal → C3 theo nhánh role; `never_asks` có cần trường phạm vi không; `POLICY_VERSION` `st-policy-0.2` [GIẢ ĐỊNH].
+- 2026-11-27: TV3 chốt D-041 (C3 nhánh role → Đỏ; A3 không cấm `matches_official_account`; T-17 dùng `st-policy-0.2`; giữ bỏ C7–C9). T-06 chờ TV3 commit.

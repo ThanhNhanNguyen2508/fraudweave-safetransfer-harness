@@ -181,3 +181,15 @@ Thử nghiệm nháp thì đặt trong SANDBOX. Xong thì cho tôi xem diff + k�
 ```text
 Chốt phiên: cập nhật session-log, PLAN, MAP; chạy skill contract-audit; liệt kê câu hỏi cần hỏi TV1/TV2.
 ```
+
+Phiên mới. Đọc CLAUDE.md, AGENTS.md, MAP.md, PLAN.md, CONTRACT_STATUS.md và 10 dòng cuối session-log.md.
+Tôi đã commit T-05 . Làm task T-06 bằng skill implement-task.
+Nếu task cần Opus (T-07a, T-17, nhãn eval T-24) mà phiên đang Sonnet thì dừng và nhắc tôi /model.
+Task chạm contract PENDING thì dùng stub + marker, KHÔNG tự chốt. Nháp thì để trong SANDBOX.
+Cuối task: gọi code-reviewer review diff, rồi cho tôi xem diff + kết quả test. Chưa commit.
+
+
+Lệnh khi bật claude code : 
+cd "C:\Users\Dell\Downloads\MomoTechDay\Implements\Agent Workspace"
+
+claude --resume b4857841-9b0a-4ea2-b234-1fa53109554a --add-dir "C:\Users\Dell\Downloads\MomoTechDay\Implements\Source code-SafeTransfer\FraudWaveAI-Momo"
