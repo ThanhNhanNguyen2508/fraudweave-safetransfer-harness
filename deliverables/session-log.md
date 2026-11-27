@@ -72,3 +72,10 @@
 - Làm (REPO, chưa commit, nhánh `tv3/vietqr-spec-notes`): `common/banks.py` + `data/bank_aliases.json` (10 BIN, alias có nguồn, khớp chính xác, `by_bin` chỉ theo cột BIN), `common/text.py` (`normalize_text`, T-18 dùng lại), `common/vietqr/crc.py` (CRC-16/CCITT-FALSE, CRC hex không phân biệt hoa thường, UTF-8), `tlv.py` (Length theo ký tự, ID trùng/length 00/cụt → `TlvError`, lỗi không lặp value), `vietqr/__init__.py`; test `test_banks/text/crc/tlv.py`. 272 test pass, ruff + export_openapi sạch; wheel build thử có chứa JSON [ĐÃ XÁC MINH].
 - Review `code-reviewer` (Opus): sửa `crc_matches` không ném lỗi với surrogate, `by_bin` tách map riêng, kiểm kiểu `aliases`, bảng chỉ đọc (MappingProxyType). Chưa review lại sau sửa. Một lần ghi file lỗi làm rỗng `test_crc.py`; đã viết lại và chạy lại toàn bộ.
 - Việc dở: T-07/T-09 chờ TV3 commit rồi mới `done`. T-10 phải kiểm tag 63 là object cuối. Tiếp theo T-08 (normalise STK + `recipient_key`, cần `FW_HMAC_KEY` giả trong test).
+- 2026-11-27: TV3 commit + push T-07/T-09 → `done`. Bắt đầu T-08 (Sonnet).
+
+## 2026-11-27 · Phiên 9b · T-08 normalise STK + recipient_key (Sonnet)
+- Làm (REPO, chưa commit, nhánh `tv3/vietqr-banks-tlv`): `common/normalize.py` (`normalize_account_number`, `mask_account`, `normalize_manual_recipient`), `common/hashing.py` (`recipient_key`, `hmac_key_from_env`), `tests/conftest.py` (fixture `hmac_key` giả), `test_normalize.py`, `test_hashing.py`. 357 test pass, ruff + export_openapi sạch.
+- Đề xuất D-044 (chờ TV3 duyệt): khoá HMAC = UTF-8 của chuỗi env (không giải hex), tối thiểu 32 ký tự, bỏ mọi khoảng trắng Unicode, chỉ chữ số ASCII. Đổi encoding khoá về sau sẽ đổi mọi `recipient_key`.
+- Việc dở: báo TV1 hàm dùng chung (`recipient_key`, `normalize_manual_recipient`); T-13 (fixture normalise 6 cách) cần T-10; `.env` thật chưa đọc, không cần.
+- T-08 review PASS (Opus). Nit cho sau: T-19 chặn độ dài `account_no` ở tầng API (10 MB tốn 0,2 s); sửa chữ trong `.env.example` về `FW_HMAC_KEY`; handoff TV1 nhắc gọi `normalize_account_number` trước `recipient_key`.

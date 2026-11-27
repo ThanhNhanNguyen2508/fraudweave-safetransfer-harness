@@ -98,9 +98,13 @@ Git repo sản phẩm, remote `github.com/ThanhNhanNguyen2508/FraudWaveAI-Momo` 
 | `.gitattributes` | `contracts/**/*.json` luôn LF (test so byte của openapi.json) |
 | `src/fraudweave/common/banks.py` | Bảng ngân hàng (T-07): `Bank`, `BankTable`, `resolve_bank()`, `bank_by_bin()`, `UnknownBankError`; khớp chính xác, chỉ 10 BIN (D-042) |
 | `src/fraudweave/common/data/bank_aliases.json` | 10 ngân hàng: BIN, short name, alias, nguồn (T-07) |
+| `src/fraudweave/common/normalize.py` | Chuẩn hoá STK (`normalize_account_number`), che số (`mask_account`), `normalize_manual_recipient()` → `NormalizedRecipient`; `InvalidRecipientError` (T-08) |
+| `src/fraudweave/common/hashing.py` | `recipient_key()` HMAC-SHA256, `hmac_key_from_env()`, `InvalidHmacKeyError` (T-08) |
+| `tests/conftest.py` | Fixture `hmac_key` giả dùng chung cho test |
 | `src/fraudweave/common/text.py` | `normalize_text()` chuẩn hoá alias (chữ thường, bỏ dấu, gộp khoảng trắng); T-18 dùng lại |
 | `src/fraudweave/common/vietqr/crc.py`, `tlv.py` | CRC-16/CCITT-FALSE (`append_crc`, `crc_matches`) và TLV EMVCo (`parse_tlv`, `encode_tlv`, `TlvError`) (T-09) |
 | `tests/unit/test_{banks,text,crc,tlv}.py` | Test T-07 và T-09, trích ID `VQ-xx` |
+| `tests/unit/test_{normalize,hashing}.py` | Test T-08: separators, 6–19 số, số 0 đầu, mask, vector hồi quy HMAC, không log/echo STK |
 | `docs/vietqr-spec-notes.md` | T-07a: quy tắc parse VietQR VQ-01…VQ-14 (mỗi dòng có `source_url` + nhãn PRIMARY/SECONDARY/LOCAL), nguồn BIN (NHNN 31/12/2023 + VietQR.IO), cảnh báo alias ngân hàng |
 | `tests/unit/test_vietqr_spec_notes.py` | Mỗi dòng VQ có nhãn + https source; BIN 6 số `9704…` không trùng (T-07a) |
 | `tests/unit/test_health.py` | 2 test cho health |
