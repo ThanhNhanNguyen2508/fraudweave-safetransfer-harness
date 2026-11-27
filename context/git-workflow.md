@@ -84,6 +84,15 @@ Thumbs.db
 7. Nếu đổi contract: `CONTRACT_STATUS.md`, `context/decisions.md`, fixtures và `openapi.json` đã đồng bộ.
 8. `git status` sạch, nhánh đúng tên, TV3 đã đồng ý push.
 
+## 4b. Checklist khi chạy môi trường live (D-049)
+
+Chưa có tài liệu deploy riêng (K12 còn PENDING), nên checklist này nằm ở đây và là nơi duy nhất cho tới khi có hosting.
+
+1. **Không chạy `scripts/seed_db.py`** trên database live. Seed là dữ liệu synthetic; evidence `verified` trong seed vẫn được tính ở `mode=live`, nên một verdict có thể dựa trên dữ liệu bịa.
+2. Database live chỉ chứa dữ liệu thật có `source_url` (org) hoặc ghi qua ingestion; không có hàng `is_synthetic = true`. Kiểm: `SELECT count(*) FROM orgs WHERE is_synthetic` (và `groups`, `evidence`) phải bằng 0.
+3. Không dựa vào giả định dải STK `999000…` không trùng STK thật.
+4. Demo (`mode=demo`) dùng database riêng hoặc môi trường riêng đã nạp seed.
+
 ## 5. Chạy song song bằng git worktree
 
 ### Quy tắc

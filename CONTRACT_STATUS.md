@@ -17,7 +17,7 @@
 | K09 | Payload Group Trust từ `/setup` | PENDING-NEED-CONFIRM-CONTRACT | TV2 | Dự kiến `api/routers/groups.py` theo contract §5.4 làm bản tạm (chưa có code) | 2026-11-25 |
 | K10 | Handoff nút "Chuyển khoản" → simulator (truyền `screening_id`) | PENDING-NEED-CONFIRM-CONTRACT | TV2 | Phía TV3: `screening_id` optional trong request `transfer-risk`; web Check nhận qua query param [GIẢ ĐỊNH] (chưa có code) | 2026-11-25 |
 | K11 | Stack chung (Python 3.11 + FastAPI + Pydantic v2; một app hay hai process) | PENDING-NEED-CONFIRM-CONTRACT | TV1, TV2 | TV3 dùng tạm stack brief §9, một FastAPI app (chưa có code) | 2026-11-25 |
-| K12 | Hosting/deploy cho demo | PENDING-NEED-CONFIRM-CONTRACT | Cả nhóm | Chạy local; chưa có deploy | 2026-11-25 |
+| K12 | Hosting/deploy cho demo | PENDING-NEED-CONFIRM-CONTRACT | Cả nhóm | Chạy local; chưa có deploy. Ràng buộc khi có deploy: không nạp synthetic seed vào live (D-049, `git-workflow.md` §4b) | 2026-11-25 |
 
 ## Câu hỏi mở cần chốt ở buổi freeze (contract §10)
 

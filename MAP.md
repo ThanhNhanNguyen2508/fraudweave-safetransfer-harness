@@ -121,7 +121,13 @@ Git repo sản phẩm, remote `github.com/ThanhNhanNguyen2508/FraudWaveAI-Momo` 
 | `src/fraudweave/storage/db.py` | `to_sqlalchemy_url` (psycopg 3), `database_url_from_env`, `make_engine`, `make_session_factory`; không kết nối lúc import (T-14) |
 | `src/fraudweave/storage/models.py` | SQLAlchemy: `orgs`, `org_official_accounts`, `groups`, `group_anchors`, `group_fund_accounts`, `evidence`, `evidence_reporters`, `audit_log`; CHECK cho enum, `rk_`, `public_warning` cần `source_url`, simulation (T-14) |
 | `tests/unit/test_db.py`, `test_migrations.py` | T-14: URL/model hygiene (không cần DB); migration upgrade/downgrade, drift, RLS, ràng buộc trên Postgres local (cần `FW_TEST_DATABASE_URL` tên `*_test`, không thì skip) |
-| `.gitkeep` | Thư mục chưa dùng: `contracts/fixtures/normalize`, `src/fraudweave/{evidence,registry,integrations}`, `data/seed`, `web/safetransfer-check`, `tests/golden` |
+| `data/seed/{orgs,groups,evidence}.json` | Seed synthetic cho 12 golden (3 org, 1 group, 3 evidence); STK dải `999000…`, mọi bản ghi `synthetic: true`, `source_url` là `example.invalid` (T-15) |
+| `src/fraudweave/storage/seed.py` | `load_seed()` (pydantic, `extra=forbid`) + `apply_seed()` idempotent; tính `recipient_key` trong bộ nhớ, chỉ ghi key + số đã che (T-15) |
+| `scripts/seed_db.py` | CLI nạp seed (cần `DATABASE_URL`, `FW_HMAC_KEY`); chỉ in số lượng (T-15) |
+| `src/fraudweave/registry/repository.py` | `find_org_by_claim` (khớp chính xác sau `normalize_text`, trùng 2 org → None), `get_org`, `get_group_trust`; trả dataclass frozen (T-16) |
+| `src/fraudweave/evidence/repository.py` | `lookup_account_evidence`: bỏ retracted/hết hạn; simulation chỉ tính ở `mode=demo` (như verified, `demo_data_used`); top 3 record (T-16) |
+| `tests/unit/test_seed.py`, `test_repositories.py` | T-15/T-16 (phần DB cần `FW_TEST_DATABASE_URL`); `tests/conftest.py` có fixture `test_database_url`, `alembic_config`, `clean_db` dùng chung |
+| `.gitkeep` | Thư mục chưa dùng: `contracts/fixtures/normalize`, `src/fraudweave/integrations`, `web/safetransfer-check`, `tests/golden` |
 
 Chưa có (theo PLAN): `.worktreeinclude`, `scripts/new_worktree.ps1`, `check_prepush.ps1` (T-04b).
 
