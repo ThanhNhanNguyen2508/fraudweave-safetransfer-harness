@@ -7,7 +7,7 @@
 | ID | Hạng mục | Trạng thái | Cần chốt với | Stub/adapter trong code | Ngày cập nhật |
 | --- | --- | --- | --- | --- | --- |
 | K01 | Quy tắc normalise STK/bank, công thức `recipient_key` | DRAFT-TV3 | TV1 (xác nhận import `fw_common`) | Không cần stub. Dự kiến `src/fraudweave/common/normalize.py`, `hashing.py` (chưa có code) | 2026-11-25 |
-| K02 | VietQR parse/encode/decode + `POST /v1/qr/decode` | DRAFT-TV3 | TV2 (định dạng upload ảnh) | Dự kiến `common/vietqr/*`, `api/routers/qr.py`; tạm nhận multipart image (chưa có code) | 2026-11-25 |
+| K02 | VietQR parse/encode/decode + `POST /v1/qr/decode` | DRAFT-TV3 | TV2 (định dạng upload ảnh) | Dự kiến `common/vietqr/*`, `api/routers/qr.py`; tạm nhận multipart image (chưa có code). Nguồn: `REPO/docs/vietqr-spec-notes.md` (T-07a) — quy tắc tag mới ở mức SECONDARY; **chưa được lên FROZEN** cho tới khi có spec NAPAS / TCCS 3:2018 chính thức | 2026-11-27 |
 | K03 | `POST /v1/transfer-risk` request/response | DRAFT-TV3 | TV2 (trường UI cần hiển thị) | Models trong `common/contracts.py` (T-05, chưa commit); router `api/routers/transfer.py` chưa có (T-19). `holder_type` ∈ personal/organization/unknown (D-031); `reason_codes: list[str]` + `demo_data_used` trong response (D-032, sẽ thành enum: báo TV2); 422 chỉ cho lỗi nhập sai, còn lại 400 (D-033, lệch mặc định FastAPI: báo TV2); request `forbid`, response `ignore` (D-034) | 2026-11-26 |
 | K04 | Decision table Đỏ/Vàng/Xám/Xanh | DRAFT-TV3 | Cả nhóm: `amount_band` có đổi verdict không; group mismatch hard hay soft | **Bảng MVP v2 proposed** (D-035…D-039): thứ tự mới, C3 cần org resolve hoặc role, C6 chỉ token `transfer`, bỏ C7–C9 khỏi verdict (reserved). Chờ TV1/TV2 duyệt qua handoff T-06c; chưa có code (`safetransfer/policy.py`, T-17) | 2026-11-27 |
 | K05 | Evidence schema + `POST /v1/evidence` | DRAFT-TV3 | — | Models `EvidenceCreateRequest/Response` trong `common/contracts.py` (T-05); `evidence/ingestion.py`, router chưa có | 2026-11-26 |
@@ -43,3 +43,6 @@
 | 2026-11-27 | K01–K12 | giữ nguyên | agent | T-06: tạo bản sao gọn `REPO/contracts/CONTRACT_STATUS.md`; test `test_fixtures_schema.py` bắt mọi marker PENDING trong `src/` phải là PENDING trong bản sao |
 | 2026-11-27 | K04 | DRAFT-TV3 (giữ), bảng v2 **proposed** | TV3 | D-035…D-040; đưa vào handoff T-06c cho TV1/TV2; chưa freeze |
 | 2026-11-27 | K04 | DRAFT-TV3 (giữ), v2 proposed | TV3 | D-041: C3 nhánh role, A3 không cấm `matches_official_account`, `st-policy-0.2` |
+| 2026-11-27 | K02 | DRAFT-TV3 (giữ) | agent | T-07a: không tìm được spec tag-level chính thức công khai; chặn FROZEN cho tới khi TV3 lấy được bản NAPAS/TCCS 3:2018 |
+| 2026-11-27 | K02 | DRAFT-TV3 (giữ) | TV3 | D-042: phạm vi MVP `QRIBFTTA` + 10 BIN; FROZEN vẫn chặn (EMVCo v1.1 cần login; bản NAPAS trên kiemtrabank.com không phân giải DNS) |
+| 2026-11-27 | K02 | DRAFT-TV3 (giữ) | TV3 | D-043: chốt VQ-Q2/Q3/Q5/Q7; T-07a done; vẫn chưa FROZEN (không có spec NAPAS/EMVCo bản chính thức đọc được) |

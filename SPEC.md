@@ -123,5 +123,5 @@ Fixture bổ sung: `contracts/fixtures/normalize/` (cùng 1 người nhận vi�
 
 ## 7. Chưa kiểm chứng
 
-- Chi tiết VietQR/EMVCo (tag 38 GUID, service code, tag 62, CRC) và danh sách BIN phải đối chiếu spec NAPAS chính thức, có `source_url`, chỉ dùng mẫu QR công khai, trước khi K02 lên FROZEN (task T-07a, D-021).
+- Chi tiết VietQR/EMVCo (tag 38 GUID, service code, tag 62, CRC) và danh sách BIN phải đối chiếu spec NAPAS chính thức, có `source_url`, chỉ dùng mẫu QR công khai, trước khi K02 lên FROZEN (task T-07a, D-021). **Kết quả T-07a (27/11):** BIN có nguồn NHNN [ĐÃ XÁC MINH]; quy tắc tag chỉ có nguồn thứ cấp [CHƯA KIỂM CHỨNG nguồn chính], xem `REPO/docs/vietqr-spec-notes.md`.
 - Dữ liệu registry trong contract (EVN, hotline 19009000...) là placeholder.

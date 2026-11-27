@@ -60,6 +60,8 @@ Git repo riêng, nhánh `main`, chưa có commit và chưa có remote (đợi TV
 | `context/glossary.md` | Thuật ngữ: Claim, C1–C9, verdict, recipient_key, tier, evidence... |
 | `context/git-workflow.md` | Branch/commit REPO, .gitignore đề xuất, checklist push, quy tắc worktree, chép .env, đồng bộ máy |
 | `deliverables/session-log.md` | Nhật ký phiên (append ở cuối) |
+| `deliverables/handoff/2026-11-27-tv2-transfer-risk-contract.md` | Handoff T-06c cho TV2: models, error envelope, 12 fixture, K04 v2, câu hỏi K02/K03/K04/K06/K09–K11 |
+| `deliverables/handoff/2026-11-27-tv1-contracts-and-claim-context.md` | Handoff T-06c cho TV1: models dùng chung, C7–C9 reserved, K04 v2, câu hỏi K01/K04/K06–K08/K11 |
 | `deliverables/codex-inbox/README.md` | Quy ước và mẫu ghi chú cuối phiên của Codex; file đã nhập chuyển sang `processed/` |
 | `sources/00-project-brief.md` | Brief dự án, nguồn sự thật (chỉ đọc) |
 | `sources/contract-v0.1.md` | Integration Contract v0.1; §3 đã bị brief §5 thay thế (chỉ đọc) |
@@ -68,7 +70,7 @@ Git repo riêng, nhánh `main`, chưa có commit và chưa có remote (đợi TV
 
 ## 2. REPO — `Source code-SafeTransfer\FraudWaveAI-Momo\`
 
-Git repo sản phẩm, remote `github.com/ThanhNhanNguyen2508/FraudWaveAI-Momo` (tài khoản của TV3). Nhánh làm việc `tv3/scaffold-repo` (TV3 tạo). T-04a **done** (có `uv.lock`), **chưa commit** [ĐÃ XÁC MINH 25/11].
+Git repo sản phẩm, remote `github.com/ThanhNhanNguyen2508/FraudWaveAI-Momo` (tài khoản của TV3). Nhánh hiện tại `tv3/contracts-golden-fixtures` (commit `c5e92c4`, T-05 + T-06 đã commit [ĐÃ XÁC MINH 27/11]; push theo TV3 báo).
 
 | Đường dẫn | Nội dung |
 | --- | --- |
@@ -94,10 +96,12 @@ Git repo sản phẩm, remote `github.com/ThanhNhanNguyen2508/FraudWaveAI-Momo` 
 | `contracts/CONTRACT_STATUS.md` | Bản sao gọn K01–K12 (tiếng Anh) cho đồng đội + ghi chú K03 cho consumer (T-06) |
 | `tests/contract/test_fixtures_schema.py` | Fixture parse được, khớp bảng golden, bất biến "Xanh cần claim", bản sao status khớp marker (T-06) |
 | `.gitattributes` | `contracts/**/*.json` luôn LF (test so byte của openapi.json) |
+| `docs/vietqr-spec-notes.md` | T-07a: quy tắc parse VietQR VQ-01…VQ-14 (mỗi dòng có `source_url` + nhãn PRIMARY/SECONDARY/LOCAL), nguồn BIN (NHNN 31/12/2023 + VietQR.IO), cảnh báo alias ngân hàng |
+| `tests/unit/test_vietqr_spec_notes.py` | Mỗi dòng VQ có nhãn + https source; BIN 6 số `9704…` không trùng (T-07a) |
 | `tests/unit/test_health.py` | 2 test cho health |
-| `.gitkeep` | Thư mục chưa dùng: `contracts/fixtures/{normalize,qr}`, `src/fraudweave/{common/vietqr,safetransfer,evidence,registry,storage,integrations}`, `migrations`, `data/seed`, `web/safetransfer-check`, `tests/golden`, `docs` |
+| `.gitkeep` | Thư mục chưa dùng: `contracts/fixtures/{normalize,qr}`, `src/fraudweave/{common/vietqr,safetransfer,evidence,registry,storage,integrations}`, `migrations`, `data/seed`, `web/safetransfer-check`, `tests/golden` |
 
-Chưa có (theo PLAN): `.worktreeinclude`, `scripts/new_worktree.ps1`, `check_prepush.ps1` (T-04b), `docs/vietqr-spec-notes.md` (T-07a).
+Chưa có (theo PLAN): `.worktreeinclude`, `scripts/new_worktree.ps1`, `check_prepush.ps1` (T-04b).
 
 ## 3. SANDBOX — `Test-for-agent\`
 
