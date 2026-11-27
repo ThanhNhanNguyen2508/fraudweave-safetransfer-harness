@@ -116,7 +116,12 @@ Git repo sản phẩm, remote `github.com/ThanhNhanNguyen2508/FraudWaveAI-Momo` 
 | `docs/vietqr-spec-notes.md` | T-07a: quy tắc parse VietQR VQ-01…VQ-14 (mỗi dòng có `source_url` + nhãn PRIMARY/SECONDARY/LOCAL), nguồn BIN (NHNN 31/12/2023 + VietQR.IO), cảnh báo alias ngân hàng |
 | `tests/unit/test_vietqr_spec_notes.py` | Mỗi dòng VQ có nhãn + https source; BIN 6 số `9704…` không trùng (T-07a) |
 | `tests/unit/test_health.py` | 2 test cho health |
-| `.gitkeep` | Thư mục chưa dùng: `contracts/fixtures/normalize`, `src/fraudweave/{evidence,registry,storage,integrations}`, `migrations`, `data/seed`, `web/safetransfer-check`, `tests/golden` |
+| `alembic.ini` | Cấu hình Alembic; URL không nằm trong file (T-14) |
+| `migrations/env.py`, `script.py.mako`, `versions/0001_initial_schema.py` | Alembic: env đọc `DATABASE_URL` hoặc URL do test truyền; migration đầu tạo 8 bảng + bật RLS (T-14) |
+| `src/fraudweave/storage/db.py` | `to_sqlalchemy_url` (psycopg 3), `database_url_from_env`, `make_engine`, `make_session_factory`; không kết nối lúc import (T-14) |
+| `src/fraudweave/storage/models.py` | SQLAlchemy: `orgs`, `org_official_accounts`, `groups`, `group_anchors`, `group_fund_accounts`, `evidence`, `evidence_reporters`, `audit_log`; CHECK cho enum, `rk_`, `public_warning` cần `source_url`, simulation (T-14) |
+| `tests/unit/test_db.py`, `test_migrations.py` | T-14: URL/model hygiene (không cần DB); migration upgrade/downgrade, drift, RLS, ràng buộc trên Postgres local (cần `FW_TEST_DATABASE_URL` tên `*_test`, không thì skip) |
+| `.gitkeep` | Thư mục chưa dùng: `contracts/fixtures/normalize`, `src/fraudweave/{evidence,registry,integrations}`, `data/seed`, `web/safetransfer-check`, `tests/golden` |
 
 Chưa có (theo PLAN): `.worktreeinclude`, `scripts/new_worktree.ps1`, `check_prepush.ps1` (T-04b).
 

@@ -55,3 +55,4 @@
 | 2026-11-27 | K02 | DRAFT-TV3 (giữ) | TV3 | D-047 duyệt D-046 (kiểm tra lõi, tag 01 bắt buộc) và chấp nhận amount có số 0 đầu; vẫn chưa FROZEN |
 | 2026-11-27 | K04 | DRAFT-TV3 (giữ), v2 proposed | agent | T-17: hiện thực bảng v2 + `st-policy-0.2`; câu hỏi mở: khớp official + holder `personal` hiện ra Đỏ (C3 theo nghĩa đen D-036) |
 | 2026-11-27 | K04 | DRAFT-TV3 (giữ), v2 proposed | TV3 | D-048: miễn C3 khi khớp official của đúng org; ghép cặp claim org ↔ official, claim group ↔ declared. Giữ `st-policy-0.2` (chưa phát hành). 12 golden fixture không đổi kết quả. Cần báo TV1/TV2 (handoff 2026-11-27-k04-d048) |
+| 2026-11-27 | K05, K11 | giữ nguyên | agent | T-14: schema Postgres cho evidence (dedup `(indicator_key, scam_type)`, `public_warning` cần `source_url`, simulation tách bằng CHECK) và stack SQLAlchemy 2 + Alembic + psycopg 3; không thêm marker PENDING |
