@@ -1,6 +1,6 @@
 # MAP — bản đồ 3 thư mục
 
-> Cập nhật mỗi khi tạo, xoá hoặc di chuyển file ở **bất kỳ** thư mục nào. Lần cuối: 2026-11-27. Chỉ Claude Code sửa file này; Codex đề xuất qua `deliverables/codex-inbox/`.
+> Cập nhật mỗi khi tạo, xoá hoặc di chuyển file ở **bất kỳ** thư mục nào. Lần cuối: 2026-11-28. Chỉ Claude Code sửa file này; Codex đề xuất qua `deliverables/codex-inbox/`.
 > Gốc: `C:\Users\Dell\Downloads\MomoTechDay\Implements\`
 
 ## Tìm / lưu thông tin ở đâu
@@ -65,6 +65,9 @@ Git repo riêng, nhánh `main`, chưa có commit và chưa có remote (đợi TV
 | `deliverables/handoff/2026-11-27-tv1-contracts-and-claim-context.md` | Handoff T-06c cho TV1: models dùng chung, C7–C9 reserved, K04 v2, câu hỏi K01/K04/K06–K08/K11 |
 | `deliverables/handoff/2026-11-27-tv1-recipient-key-and-normalisation.md` | Handoff TV1 cho T-07/T-08/T-09: hàm `fw_common`, quy tắc K01, bảng map lỗi, 4 vector hồi quy, câu hỏi K01 |
 | `deliverables/handoff/2026-11-27-k04-d048-claim-pairing.md` | Handoff TV1 + TV2: K04 D-048 (miễn C3 khi khớp official, ghép cặp claim–tài khoản), bảng ca đổi kết quả, 12 golden không đổi |
+| `deliverables/2026-11-28-gate-g1-acceptance.md` | Biên bản nghiệm thu Gate G1 theo SPEC §6: đối chiếu từng tiêu chí, kết quả test (866 pass trên Postgres), contract-audit |
+| `deliverables/handoff/2026-11-28-tv2-health-versions-rate-limit.md` | Handoff TV2: health có version, 429 `rate_limited` + `Retry-After`, thứ tự 401→429→400/422, câu hỏi K03/K12 |
+| `deliverables/handoff/2026-11-28-tv1-health-versions.md` | Handoff TV1: G1 đạt, health version, chưa có `model_version` (K08), câu hỏi K08/K11 |
 | `deliverables/codex-inbox/README.md` | Quy ước và mẫu ghi chú cuối phiên của Codex; file đã nhập chuyển sang `processed/` |
 | `sources/00-project-brief.md` | Brief dự án, nguồn sự thật (chỉ đọc) |
 | `sources/contract-v0.1.md` | Integration Contract v0.1; §3 đã bị brief §5 thay thế (chỉ đọc) |
@@ -87,7 +90,8 @@ Git repo sản phẩm, remote `github.com/ThanhNhanNguyen2508/FraudWaveAI-Momo` 
 | `docker-compose.yml` | Postgres 16 local cho dev/test; bắt buộc có `POSTGRES_PASSWORD` trong `.env` |
 | `src/fraudweave/__init__.py` | `__version__` (nguồn version duy nhất) |
 | `src/fraudweave/api/main.py` | `create_app()` + mount router dưới `/v1` |
-| `src/fraudweave/api/routers/health.py` | `GET /v1/health` → `{status, app_version}` |
+| `src/fraudweave/api/routers/health.py` | `GET /v1/health` → `{status, app_version, policy_version, contract_version}`, không cần key, không bị rate limit (T-25) |
+| `src/fraudweave/api/rate_limit.py` | `RateLimiter` sliding window trong bộ nhớ, 60 req/phút/client (contract §7); `enforce_rate_limit` trong `deps.py` → 429 `rate_limited` + `Retry-After` (T-25) |
 | `src/fraudweave/common/contracts.py` | Pydantic contracts §4.2 + transfer-risk (K03) + evidence (K05); marker K06/K07 (T-05) |
 | `src/fraudweave/api/errors.py` | Error envelope §7: `ApiError`, `ErrorCode`, handlers (T-05) |
 | `src/fraudweave/api/openapi.py` | Sinh OpenAPI kèm mọi contract model (T-05) |
@@ -116,7 +120,8 @@ Git repo sản phẩm, remote `github.com/ThanhNhanNguyen2508/FraudWaveAI-Momo` 
 | `tests/unit/test_{normalize,hashing}.py` | Test T-08: separators, 6–19 số, số 0 đầu, mask, vector hồi quy HMAC, không log/echo STK |
 | `docs/vietqr-spec-notes.md` | T-07a: quy tắc parse VietQR VQ-01…VQ-14 (mỗi dòng có `source_url` + nhãn PRIMARY/SECONDARY/LOCAL), nguồn BIN (NHNN 31/12/2023 + VietQR.IO), cảnh báo alias ngân hàng |
 | `tests/unit/test_vietqr_spec_notes.py` | Mỗi dòng VQ có nhãn + https source; BIN 6 số `9704…` không trùng (T-07a) |
-| `tests/unit/test_health.py` | 2 test cho health |
+| `tests/unit/test_health.py` | Test health: đủ 3 version, không cần key/cấu hình (T-25) |
+| `tests/unit/test_rate_limit.py` | Test limiter (cửa sổ trượt, Retry-After, tách client) + 429 trên `transfer-risk` (T-25) |
 | `alembic.ini` | Cấu hình Alembic; URL không nằm trong file (T-14) |
 | `migrations/env.py`, `script.py.mako`, `versions/0001_initial_schema.py` | Alembic: env đọc `DATABASE_URL` hoặc URL do test truyền; migration đầu tạo 8 bảng + bật RLS (T-14) |
 | `src/fraudweave/storage/db.py` | `to_sqlalchemy_url` (psycopg 3), `database_url_from_env`, `make_engine`, `make_session_factory`; không kết nối lúc import (T-14) |
