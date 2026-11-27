@@ -79,3 +79,12 @@
 - Đề xuất D-044 (chờ TV3 duyệt): khoá HMAC = UTF-8 của chuỗi env (không giải hex), tối thiểu 32 ký tự, bỏ mọi khoảng trắng Unicode, chỉ chữ số ASCII. Đổi encoding khoá về sau sẽ đổi mọi `recipient_key`.
 - Việc dở: báo TV1 hàm dùng chung (`recipient_key`, `normalize_manual_recipient`); T-13 (fixture normalise 6 cách) cần T-10; `.env` thật chưa đọc, không cần.
 - T-08 review PASS (Opus). Nit cho sau: T-19 chặn độ dài `account_no` ở tầng API (10 MB tốn 0,2 s); sửa chữ trong `.env.example` về `FW_HMAC_KEY`; handoff TV1 nhắc gọi `normalize_account_number` trước `recipient_key`.
+- 2026-11-27: TV3 duyệt D-044 (ghi D-045). Sửa mô tả `FW_HMAC_KEY` trong `REPO/.env.example`; viết handoff TV1 `2026-11-27-tv1-recipient-key-and-normalisation.md` (chưa gửi). Nit của T-19 giữ nguyên. T-08 chờ TV3 commit rồi `done`.
+- 2026-11-27: REPO commit `3a1f346` (T-08) xác nhận qua `git log` → T-08 `done`. Còn chưa commit: `REPO/.env.example` (mô tả `FW_HMAC_KEY`), HARNESS D-045 + handoff TV1.
+
+## 2026-11-27 · Phiên 9c · T-10 parse VietQR (Sonnet)
+- Làm (REPO, chưa commit, nhánh `tv3/vietqr-banks-tlv`): `common/vietqr/parse.py` (`parse_vietqr`, `InvalidQrError`), `normalize.build_recipient()` dùng chung nhập tay/QR, `contracts/fixtures/qr/` (17 payload synthetic), `tests/unit/test_vietqr_parse.py`, `tests/contract/test_qr_fixtures.py`, phần "Checks applied by the T-10 parser" trong `docs/vietqr-spec-notes.md`. 499 test pass, ruff + export_openapi sạch. Chưa làm T-11/T-12/T-13/T-19.
+- Đề xuất D-046 (chờ TV3): kiểm tra lõi 00/01/53/58 + tag 63 cuối + thứ tự lỗi. Giữ K02 chưa FROZEN.
+- Việc dở: review `code-reviewer`; T-13 (fixture normalise 6 cách) giờ làm được; T-10 chờ TV3 commit rồi `done`.
+- T-10 review (Opus + fuzz 200.000 payload): sửa lỗi tag 63 dài ≠ 4 vẫn qua (có thể nuốt tag 53/58/54 để né kiểm tra), thêm 2 test, sửa mô tả Q17. 501 test pass; fuzz lại `bad=0`. **Chờ TV3 duyệt D-046** (reviewer đánh FAIL cho tới khi duyệt, vì code theo đề xuất). Nit giữ lại cho TV3/T-19: amount có số 0 đầu (`0055000` → 55000) đang được nhận; STK trong QR đi qua normaliser nhập tay (nhận khoảng trắng Unicode, theo VQ-Q3); `qr_memo` trả nguyên văn → UI phải escape, T-19 không log memo; `InvalidHmacKeyError` là lỗi cấu hình → 5xx; payload không trim → T-12/T-19 xử lý `\n` từ scanner/copy-paste.
+- 2026-11-27: TV3 duyệt D-046 và chấp nhận amount có số 0 đầu (D-047); thêm ca `0055000` vào test để cố định hành vi. Gọi lại reviewer.

@@ -62,6 +62,7 @@ Git repo riêng, nhánh `main`, chưa có commit và chưa có remote (đợi TV
 | `deliverables/session-log.md` | Nhật ký phiên (append ở cuối) |
 | `deliverables/handoff/2026-11-27-tv2-transfer-risk-contract.md` | Handoff T-06c cho TV2: models, error envelope, 12 fixture, K04 v2, câu hỏi K02/K03/K04/K06/K09–K11 |
 | `deliverables/handoff/2026-11-27-tv1-contracts-and-claim-context.md` | Handoff T-06c cho TV1: models dùng chung, C7–C9 reserved, K04 v2, câu hỏi K01/K04/K06–K08/K11 |
+| `deliverables/handoff/2026-11-27-tv1-recipient-key-and-normalisation.md` | Handoff TV1 cho T-07/T-08/T-09: hàm `fw_common`, quy tắc K01, bảng map lỗi, 4 vector hồi quy, câu hỏi K01 |
 | `deliverables/codex-inbox/README.md` | Quy ước và mẫu ghi chú cuối phiên của Codex; file đã nhập chuyển sang `processed/` |
 | `sources/00-project-brief.md` | Brief dự án, nguồn sự thật (chỉ đọc) |
 | `sources/contract-v0.1.md` | Integration Contract v0.1; §3 đã bị brief §5 thay thế (chỉ đọc) |
@@ -102,13 +103,16 @@ Git repo sản phẩm, remote `github.com/ThanhNhanNguyen2508/FraudWaveAI-Momo` 
 | `src/fraudweave/common/hashing.py` | `recipient_key()` HMAC-SHA256, `hmac_key_from_env()`, `InvalidHmacKeyError` (T-08) |
 | `tests/conftest.py` | Fixture `hmac_key` giả dùng chung cho test |
 | `src/fraudweave/common/text.py` | `normalize_text()` chuẩn hoá alias (chữ thường, bỏ dấu, gộp khoảng trắng); T-18 dùng lại |
+| `src/fraudweave/common/vietqr/parse.py` | `parse_vietqr(payload, hmac_key)` → `NormalizedRecipient`; `InvalidQrError` (T-10) |
+| `contracts/fixtures/qr/*.json` | 17 payload VietQR synthetic (Q01–Q05 hợp lệ, Q10–Q21 lỗi) + kết quả mong đợi (T-10) |
+| `tests/unit/test_vietqr_parse.py`, `tests/contract/test_qr_fixtures.py` | Test parser và fixture QR, trích ID `VQ-xx` (T-10) |
 | `src/fraudweave/common/vietqr/crc.py`, `tlv.py` | CRC-16/CCITT-FALSE (`append_crc`, `crc_matches`) và TLV EMVCo (`parse_tlv`, `encode_tlv`, `TlvError`) (T-09) |
 | `tests/unit/test_{banks,text,crc,tlv}.py` | Test T-07 và T-09, trích ID `VQ-xx` |
 | `tests/unit/test_{normalize,hashing}.py` | Test T-08: separators, 6–19 số, số 0 đầu, mask, vector hồi quy HMAC, không log/echo STK |
 | `docs/vietqr-spec-notes.md` | T-07a: quy tắc parse VietQR VQ-01…VQ-14 (mỗi dòng có `source_url` + nhãn PRIMARY/SECONDARY/LOCAL), nguồn BIN (NHNN 31/12/2023 + VietQR.IO), cảnh báo alias ngân hàng |
 | `tests/unit/test_vietqr_spec_notes.py` | Mỗi dòng VQ có nhãn + https source; BIN 6 số `9704…` không trùng (T-07a) |
 | `tests/unit/test_health.py` | 2 test cho health |
-| `.gitkeep` | Thư mục chưa dùng: `contracts/fixtures/{normalize,qr}`, `src/fraudweave/{safetransfer,evidence,registry,storage,integrations}`, `migrations`, `data/seed`, `web/safetransfer-check`, `tests/golden` |
+| `.gitkeep` | Thư mục chưa dùng: `contracts/fixtures/normalize`, `src/fraudweave/{safetransfer,evidence,registry,storage,integrations}`, `migrations`, `data/seed`, `web/safetransfer-check`, `tests/golden` |
 
 Chưa có (theo PLAN): `.worktreeinclude`, `scripts/new_worktree.ps1`, `check_prepush.ps1` (T-04b).
 
