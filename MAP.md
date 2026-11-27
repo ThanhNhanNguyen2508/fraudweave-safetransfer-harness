@@ -96,10 +96,15 @@ Git repo sản phẩm, remote `github.com/ThanhNhanNguyen2508/FraudWaveAI-Momo` 
 | `contracts/CONTRACT_STATUS.md` | Bản sao gọn K01–K12 (tiếng Anh) cho đồng đội + ghi chú K03 cho consumer (T-06) |
 | `tests/contract/test_fixtures_schema.py` | Fixture parse được, khớp bảng golden, bất biến "Xanh cần claim", bản sao status khớp marker (T-06) |
 | `.gitattributes` | `contracts/**/*.json` luôn LF (test so byte của openapi.json) |
+| `src/fraudweave/common/banks.py` | Bảng ngân hàng (T-07): `Bank`, `BankTable`, `resolve_bank()`, `bank_by_bin()`, `UnknownBankError`; khớp chính xác, chỉ 10 BIN (D-042) |
+| `src/fraudweave/common/data/bank_aliases.json` | 10 ngân hàng: BIN, short name, alias, nguồn (T-07) |
+| `src/fraudweave/common/text.py` | `normalize_text()` chuẩn hoá alias (chữ thường, bỏ dấu, gộp khoảng trắng); T-18 dùng lại |
+| `src/fraudweave/common/vietqr/crc.py`, `tlv.py` | CRC-16/CCITT-FALSE (`append_crc`, `crc_matches`) và TLV EMVCo (`parse_tlv`, `encode_tlv`, `TlvError`) (T-09) |
+| `tests/unit/test_{banks,text,crc,tlv}.py` | Test T-07 và T-09, trích ID `VQ-xx` |
 | `docs/vietqr-spec-notes.md` | T-07a: quy tắc parse VietQR VQ-01…VQ-14 (mỗi dòng có `source_url` + nhãn PRIMARY/SECONDARY/LOCAL), nguồn BIN (NHNN 31/12/2023 + VietQR.IO), cảnh báo alias ngân hàng |
 | `tests/unit/test_vietqr_spec_notes.py` | Mỗi dòng VQ có nhãn + https source; BIN 6 số `9704…` không trùng (T-07a) |
 | `tests/unit/test_health.py` | 2 test cho health |
-| `.gitkeep` | Thư mục chưa dùng: `contracts/fixtures/{normalize,qr}`, `src/fraudweave/{common/vietqr,safetransfer,evidence,registry,storage,integrations}`, `migrations`, `data/seed`, `web/safetransfer-check`, `tests/golden` |
+| `.gitkeep` | Thư mục chưa dùng: `contracts/fixtures/{normalize,qr}`, `src/fraudweave/{safetransfer,evidence,registry,storage,integrations}`, `migrations`, `data/seed`, `web/safetransfer-check`, `tests/golden` |
 
 Chưa có (theo PLAN): `.worktreeinclude`, `scripts/new_worktree.ps1`, `check_prepush.ps1` (T-04b).
 
