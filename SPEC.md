@@ -54,15 +54,17 @@ Quy tắc cho eval set (D-023):
 | --- | --- | --- | --- | --- |
 | 0 | Không normalise được người nhận | HTTP 422 | Nhập lại | `invalid_recipient`, `unknown_bank`, `invalid_qr` |
 | 1 | Có hard contradiction **C2 / C3 / C6** | red | `cancel` | C2/C3/C6 đã bắn (+ C5 nếu `E_verified ≥ 1`) |
-| 2 | (`match_official` or `match_declared`) and `E_verified ≥ 1` | amber | `verify_by_call` | `registry_conflict` (đưa vào review); **không** liệt kê C5 (D-037) |
+| 2 | Claim được xác nhận đúng loại tài khoản (D-048) and `E_verified ≥ 1` | amber | `verify_by_call` | `registry_conflict` (đưa vào review); **không** liệt kê C5 (D-037) |
 | 3 | `E_verified ≥ 1` (C5) | red | `cancel` | C5 |
-| 4 | `match_official` or `match_declared` | green | `proceed` | `matches_official_account` / `matches_declared_account` (+ `unverified_reports_on_official` nếu `E_unverified ≥ 1`) |
+| 4 | Claim được xác nhận đúng loại tài khoản (D-048) | green | `proceed` | `matches_official_account` / `matches_declared_account` (+ `unverified_reports_on_official` nếu `E_unverified ≥ 1`) |
 | 5 | `E_unverified ≥ 1`, hoặc org được claim không có trong registry | amber | `verify_by_call` | `unverified_reports`, `org_not_in_registry` |
 | 6 | Còn lại | grey | `verify_by_call` | `no_data` |
 
+Ghép cặp claim–tài khoản (D-048): claim org (resolve được hay không) chỉ được xác nhận bằng `match_official` của đúng org đó; claim group (khi không có claim org) chỉ được xác nhận bằng `match_declared`. `match_declared` không bao giờ xác nhận claim org, `match_official` không xác nhận claim group.
+
 Định nghĩa hard contradiction (MVP):
-- **C2** `payee_not_official_account`: claim resolve được tới org trong registry (hoặc group có `payment_policy = declared_accounts_only` và role teacher / treasurer / admin), và không khớp official/declared.
-- **C3** `personal_holder_for_org_claim` (D-036): `holder_type = personal` **và** (claim resolve được tới org trong registry, **hoặc** `claimed_role` ∈ org_staff / bank_staff / police). Org **không** resolve được tự nó không bắn C3; `holder_type = unknown` không bao giờ bắn C3.
+- **C2** `payee_not_official_account`: claim resolve được tới org trong registry (hoặc group có `payment_policy = declared_accounts_only` và role teacher / treasurer / admin), và tài khoản không khớp đúng loại của claim đó (D-048): claim org cần `match_official`, nhánh group cần `match_declared`.
+- **C3** `personal_holder_for_org_claim` (D-036): `holder_type = personal` **và** (claim resolve được tới org trong registry, **hoặc** `claimed_role` ∈ org_staff / bank_staff / police). Org **không** resolve được tự nó không bắn C3; `holder_type = unknown` không bao giờ bắn C3. **Miễn C3** khi STK khớp official account của đúng org được claim (D-048); C2/C5/C6 và `registry_conflict` không đổi.
 - **C5** `confirmed_indicator`: `E_verified ≥ 1`.
 - **C6** `org_never_asks_transfer` (D-038): claim resolve được tới org có `never_asks` chứa token **`transfer`**. MVP chỉ hỗ trợ `transfer`; `personal_transfer` và token khác bị bỏ qua. **Limitation:** registry chưa có trường phạm vi áp dụng (role, kênh, loại giao dịch), nên `transfer` áp cho mọi yêu cầu chuyển khoản nhân danh org đó, kể cả vào tài khoản official. Chỉ đặt `transfer` cho dữ liệu synthetic hoặc chính sách có `source_url`.
 

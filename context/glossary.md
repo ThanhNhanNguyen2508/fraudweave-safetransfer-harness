@@ -27,8 +27,8 @@
 | **Claim-Check B1–B5** | Các bước trong engine Guardian của TV1. Chi tiết từng bước [CHƯA CÓ TRONG SOURCES] |
 | **Contradiction** | Mâu thuẫn tìm thấy, có `code` C1–C9, `severity` (C1–C6 = hard, C7–C9 = soft), `reason_code`, `message_vi`, `evidence_ids` |
 | **C1, C4** | Hard contradiction thuộc phía Guardian. Định nghĩa [CHƯA CÓ TRONG SOURCES] |
-| **C2** `payee_not_official_account` | Claim trỏ tới org trong registry (hoặc group có `payment_policy = declared_accounts_only` và role teacher/treasurer/admin), nhưng tài khoản không khớp official/declared |
-| **C3** `personal_holder_for_org_claim` | `holder_type = personal` **và** (claim resolve được tới org trong registry **hoặc** `claimed_role` ∈ org_staff / bank_staff / police). Org không resolve được tự nó không bắn C3; `unknown` không bao giờ bắn C3 (D-036) |
+| **C2** `payee_not_official_account` | Claim trỏ tới org trong registry (hoặc group có `payment_policy = declared_accounts_only` và role teacher/treasurer/admin), nhưng tài khoản không khớp đúng loại của claim: claim org cần official, nhánh group cần declared (D-048) |
+| **C3** `personal_holder_for_org_claim` | `holder_type = personal` **và** (claim resolve được tới org trong registry **hoặc** `claimed_role` ∈ org_staff / bank_staff / police). Org không resolve được tự nó không bắn C3; `unknown` không bao giờ bắn C3 (D-036). Miễn C3 khi khớp official account của đúng org được claim (D-048) |
 | **C5** `confirmed_indicator` | Có ≥ 1 evidence **verified** còn hạn trên tài khoản |
 | **C6** `org_never_asks_transfer` | `never_asks` của tổ chức được claim có chứa token `transfer` (MVP chỉ hỗ trợ token này, D-038), ví dụ công an yêu cầu chuyển tiền vào "tài khoản an toàn" |
 | **C7–C9** | Tín hiệu mềm (soft) đến từ Guardian qua `screening_id`; ý nghĩa từng mã [CHƯA CÓ TRONG SOURCES]. **Reserved, không ảnh hưởng verdict SafeTransfer MVP** (D-039) |
