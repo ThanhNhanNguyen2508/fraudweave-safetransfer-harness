@@ -46,7 +46,7 @@
 | ID | Mô tả | File trong REPO | Test chứng minh xong | Phụ thuộc | Trạng thái |
 | --- | --- | --- | --- | --- | --- |
 | T-11 | Encode VietQR + sinh ảnh QR demo (K02). **Ngoài G1, xong trước 1/12** | `src/fw/common/vietqr/encode.py`, `scripts/gen_demo_qr.py` | `tests/unit/test_vietqr_roundtrip.py`: `parse(encode(x)) == x` | T-10 | **done** 28/11: TV3 nghiệm thu PASS; 839 pass + 159 skip (159 test cần Postgres, chưa kết nối trong phiên agent), ruff sạch, 5/5 mutant bị bắt; review Opus PASS |
-| T-12 | Decode ảnh → payload (opencv `QRCodeDetector`) + `POST /v1/qr/decode` (K02: định dạng upload với TV2 **stub trước**, tạm nhận multipart). **Ngoài G1, xong trước 1/12** | `src/fw/common/vietqr/decode_image.py`, `src/fw/api/routers/qr.py` | `tests/unit/test_decode_image.py` dùng ảnh sinh từ T-11; `tests/contract/test_qr_endpoint.py` | T-11 | todo |
+| T-12 | Decode ảnh → payload (opencv `QRCodeDetector`) + `POST /v1/qr/decode` (K02 DRAFT-TV3, D-053: định dạng upload mặc định là multipart một trường ảnh, TV2 xác nhận; **không đặt marker PENDING**). **Ngoài G1, xong trước 1/12** | `src/fw/common/vietqr/decode_image.py`, `src/fw/api/routers/qr.py` | `tests/unit/test_decode_image.py` dùng ảnh sinh từ T-11; `tests/contract/test_qr_endpoint.py` | T-11 | **done** 28/11: TV3 nghiệm thu; phương án B + D-055 (1 decode mỗi client, timeout → 503); review Opus lần 3 không blocker; 1008 pass + 159 skip với `-W error` trong phiên agent (không DB), TV3 báo đã chạy xong PostgreSQL regression (số liệu chi tiết chưa được ghi lại) |
 | T-20 | Seed + fixture cho 8 golden còn lại (G2, R2, R3, R4, A1, A2, A3, A4) | `data/seed/*.json`, `contracts/fixtures/transfer/` | `tests/golden/test_transfer_golden.py` pass **đủ 11 + A4** | T-19 | todo |
 | T-21 | `POST /v1/evidence`: validate, dedup `(key, scam_type)`, status do server đặt, TTL, merge chỉ nâng status (K05; trường từ Guardian/mod/Báo cáo **stub trước** K06) | `src/fw/evidence/ingestion.py`, `src/fw/api/routers/evidence.py` | `tests/unit/test_ingestion.py`, `tests/contract/test_evidence_endpoint.py` | T-16 | todo |
 | T-22 | `PUT /v1/groups/{guild_hash}/trust` (payload `/setup` **stub trước** K09, dùng contract §5.4) + `GET /v1/registry/orgs?q=` | `src/fw/api/routers/groups.py`, `registry.py` | `tests/contract/test_groups_endpoint.py`, `test_registry_endpoint.py`; chỉ lưu `recipient_key` + masked | T-16 | todo |
@@ -90,3 +90,9 @@ Ghi 28/11 khi nghiệm thu T-13. Mỗi việc một commit nhỏ riêng trong RE
 
 - `contracts/CONTRACT_STATUS.md` (bản sao REPO) dòng K01 còn ghi "planned `common/normalize.py`, `hashing.py`", đã cũ từ T-08. Sửa cho khớp bản HARNESS; test `test_fixtures_schema.py` chỉ so marker PENDING nên không tự bắt lỗi này.
 - `tests/golden/.gitkeep` còn sót dù thư mục đã có `test_transfer_golden.py`; xoá cho đúng `coding-standards.md` (thư mục chưa dùng mới cần `.gitkeep`).
+
+## Ghi chú liên task (D-054, 28/11)
+
+- **T-23 / K12:** trang SafeTransfer Check **không được hardcode API key dịch vụ vào frontend khi deploy công khai**. Đây là câu hỏi mở của T-23/K12 (xem `CONTRACT_STATUS.md`); T-12 không làm BFF.
+- **T-21 (`POST /v1/evidence`):** phải dùng `enforce_rate_limit` (contract §7); decode ảnh dùng bucket riêng `enforce_qr_rate_limit`.
+- **T-32 (benchmark):** đo thêm `qr/decode` (nguội 0,84 đến 1,23 s, ấm 0,04 đến 0,10 s trên Windows) và `transfer-risk` khi decode bận; p95 ≤ 150 ms vẫn chỉ áp cho `transfer-risk`.

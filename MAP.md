@@ -69,6 +69,7 @@ Git repo riêng, nhánh `main`, đã có remote, TV3 tự commit và push (commi
 | `deliverables/handoff/2026-11-28-tv2-health-versions-rate-limit.md` | Handoff TV2: health có version, 429 `rate_limited` + `Retry-After`, thứ tự 401→429→400/422, câu hỏi K03/K12 |
 | `deliverables/handoff/2026-11-28-tv1-health-versions.md` | Handoff TV1: G1 đạt, health version, chưa có `model_version` (K08), câu hỏi K08/K11 |
 | `deliverables/handoff/2026-11-28-tv1-normalize-fixture-n01.md` | Handoff TV1: fixture N01 (6 cách → 1 key), cấu trúc file, đoạn mã chạy trong CI (đã chạy thử), câu hỏi K01 |
+| `deliverables/handoff/2026-11-28-tv2-qr-decode-upload.md` | Handoff TV2: `POST /v1/qr/decode` (multipart một trường `image`), giới hạn, bảng mã lỗi, ví dụ chạy thật, lưu ý `Content-Length`/`filename`, câu hỏi K02/K03 |
 | `deliverables/codex-inbox/README.md` | Quy ước và mẫu ghi chú cuối phiên của Codex; file đã nhập chuyển sang `processed/` |
 | `sources/00-project-brief.md` | Brief dự án, nguồn sự thật (chỉ đọc) |
 | `sources/contract-v0.1.md` | Integration Contract v0.1; §3 đã bị brief §5 thay thế (chỉ đọc) |
@@ -92,7 +93,7 @@ Git repo sản phẩm, remote `github.com/ThanhNhanNguyen2508/FraudWaveAI-Momo` 
 | `src/fraudweave/__init__.py` | `__version__` (nguồn version duy nhất) |
 | `src/fraudweave/api/main.py` | `create_app()` + mount router dưới `/v1` |
 | `src/fraudweave/api/routers/health.py` | `GET /v1/health` → `{status, app_version, policy_version, contract_version}`, không cần key, không bị rate limit (T-25) |
-| `src/fraudweave/api/rate_limit.py` | `RateLimiter` sliding window trong bộ nhớ, 60 req/phút/client (contract §7); `enforce_rate_limit` trong `deps.py` → 429 `rate_limited` + `Retry-After` (T-25) |
+| `src/fraudweave/api/rate_limit.py` | `RateLimiter` sliding window trong bộ nhớ, 60 req/phút/client (contract §7); `enforce_rate_limit` trong `deps.py` → 429 `rate_limited` + `Retry-After` (T-25); `ConcurrencyGate`: tối đa 1 QR decode đang xử lý hoặc chờ mỗi client, khoá là tên client, không phải key thô (T-12, D-055) |
 | `src/fraudweave/common/contracts.py` | Pydantic contracts §4.2 + transfer-risk (K03) + evidence (K05); marker K06/K07 (T-05) |
 | `src/fraudweave/api/errors.py` | Error envelope §7: `ApiError`, `ErrorCode`, handlers (T-05) |
 | `src/fraudweave/api/openapi.py` | Sinh OpenAPI kèm mọi contract model (T-05) |
@@ -108,12 +109,17 @@ Git repo sản phẩm, remote `github.com/ThanhNhanNguyen2508/FraudWaveAI-Momo` 
 | `src/fraudweave/common/data/bank_aliases.json` | 10 ngân hàng: BIN, short name, alias, nguồn (T-07) |
 | `src/fraudweave/common/normalize.py` | Chuẩn hoá STK (`normalize_account_number`), che số (`mask_account`), `normalize_manual_recipient()` → `NormalizedRecipient`; `InvalidRecipientError` (T-08) |
 | `src/fraudweave/common/hashing.py` | `recipient_key()` HMAC-SHA256, `hmac_key_from_env()`, `InvalidHmacKeyError` (T-08) |
-| `tests/conftest.py` | Fixture `hmac_key` giả dùng chung cho test |
+| `tests/conftest.py` | Fixture `hmac_key` giả; `qr_image`, `two_codes_image`, `adversarial_png` (lưới QR 1200 px ~23 KB làm OpenCV chạy ~15 s) sinh ảnh synthetic (byte mode, vì OpenCV không đọc UTF-8 ở chế độ trộn) |
 | `src/fraudweave/safetransfer/policy.py` | Decision table MVP v2 thuần: `PolicyInput` (kiểm nhất quán), `decide()` → `PolicyDecision`, `POLICY_VERSION = st-policy-0.2`, `never_asks_transfer()` (T-17) |
 | `src/fraudweave/common/reasons.py` | Reason codes + toàn bộ copy tiếng Việt cho người dùng (`message_vi`, `build_contradiction`) (T-17) |
 | `tests/unit/test_{policy,reasons}.py` | Golden inputs viết tay + 7 luật + bất biến chạy vét cạn 7.290 tổ hợp (T-17) |
 | `src/fraudweave/common/text.py` | `normalize_text()` chuẩn hoá alias (chữ thường, bỏ dấu, gộp khoảng trắng); T-18 dùng lại |
 | `src/fraudweave/common/vietqr/encode.py` | `encode_vietqr(bank_bin, account_no, *, amount, memo)` → payload + CRC, nghịch đảo của parser; cùng phạm vi D-042/D-043; tag theo thứ tự ID tăng dần, `01` = 11 (tĩnh) hoặc 12 (có amount) (T-11) |
+| `src/fraudweave/common/vietqr/decode_image.py` | `decode_qr_image(bytes) -> str`: kiểm kích thước, chữ ký PNG/JPEG, số pixel từ header (chống ảnh nén "bom"), rồi OpenCV `QRCodeDetector` (trình đọc đa + đơn); từ chối ảnh có hai mã hoặc một mã không đọc được; lỗi `InvalidImageError` thông báo cố định (T-12) |
+| `src/fraudweave/api/qr_decoder.py` | `ProcessQrDecoder`: decode trong process con (AnyIO `to_process`, `cancellable=True`), 2 worker, timeout 3 s kill thật, hàng đợi chặn (4 chờ, 2,0 s), lỗi `QrDecodeTimeout`/`QrDecoderOverloaded`/`QrDecoderUnavailable`; ghi giới hạn worker kế thừa môi trường (T-12, D-054) |
+| `src/fraudweave/api/routers/qr.py` | `POST /v1/qr/decode`: parser multipart tự dựng (đếm byte thật, giữ file trong bộ nhớ, không ghi đĩa) để auth + rate limit + kiểm Content-Length chạy **trước** khi đọc body; dùng lại `normalize_recipient`; gate 1 decode mỗi client (429 + `Retry-After: 3`), đã xác định ảnh/mã hỏng → 422, quá tải/timeout/worker chết → 503; trả `QrDecodeResponse`, `Cache-Control: no-store` (T-12, D-054) |
+| `tests/unit/test_qr_decoder.py`, `tests/contract/test_qr_endpoint_{resources,pool}.py` | T-12: tiến trình thật (psutil): kill khi quá hạn, slot trả lại, hủy request, hàng đợi chặn, worker chết, không sót tiến trình; đếm byte khi `Content-Length` nói dối, ngắt kết nối, không file tạm; transfer-risk nhanh khi 2 worker bận; `ConcurrencyGate` (giữ chỗ từ lúc nhận request, nhả khi thành công/lỗi/timeout/huỷ, khoá là tên client) |
+| `tests/unit/test_decode_image.py`, `tests/contract/test_qr_endpoint.py` | T-12: ảnh PNG/JPEG sinh từ T-11, giới hạn dung lượng/pixel, ảnh hỏng, không QR, 2 mã, không phải VietQR, 12 fixture QR lỗi → cùng mã lỗi như transfer-risk, auth, rate limit riêng, quyền riêng tư, OpenAPI |
 | `scripts/gen_demo_qr.py` | Ghi 3 ảnh PNG QR demo (STK synthetic của golden G1, R1, G2) vào `out/demo_qr` (git-ignored); từ chối STK ngoài dải `999000` (T-11) |
 | `tests/unit/test_{vietqr_roundtrip,gen_demo_qr}.py` | T-11: `parse(encode(x)) == x` cho cả 10 BIN, khớp Q01/Q03 từng byte và Q02 theo nội dung, lỗi đầu vào, script (PNG hợp lệ, không in STK) |
 | `src/fraudweave/common/vietqr/parse.py` | `parse_vietqr(payload, hmac_key)` → `NormalizedRecipient`; `InvalidQrError` (T-10) |

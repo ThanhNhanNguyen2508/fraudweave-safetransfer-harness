@@ -26,3 +26,8 @@
 ## An toàn verdict
 - Lỗi 5xx/timeout **không bao giờ** trả Xanh; client hiển thị "Không kiểm tra được".
 - Không dùng chữ "an toàn" trong copy của Xanh.
+
+## Ngoại lệ có ghi rõ (D-054)
+- `POST /v1/qr/decode` được trả `vietqr_payload` thô (chứa STK) cho chính người gọi đã xác thực, vì client cần gửi lại ở `transfer-risk`. Ngoại lệ **chỉ áp cho endpoint này**.
+- Điều kiện đi kèm: không lưu, không log, không cache payload; không đưa vào exception, telemetry hay error response; response có `Cache-Control: no-store`; không ghi audit cho decode; tên file upload không được đọc hay log.
+- Ngoài endpoint này, quy tắc "chỉ `qr_amount` được trả về trong response" vẫn giữ nguyên.
