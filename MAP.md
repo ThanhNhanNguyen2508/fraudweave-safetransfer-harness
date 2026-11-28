@@ -68,6 +68,7 @@ Git repo riêng, nhánh `main`, đã có remote, TV3 tự commit và push (commi
 | `deliverables/2026-11-28-gate-g1-acceptance.md` | Biên bản nghiệm thu Gate G1 theo SPEC §6: đối chiếu từng tiêu chí, kết quả test (866 pass trên Postgres), contract-audit |
 | `deliverables/handoff/2026-11-28-tv2-health-versions-rate-limit.md` | Handoff TV2: health có version, 429 `rate_limited` + `Retry-After`, thứ tự 401→429→400/422, câu hỏi K03/K12 |
 | `deliverables/handoff/2026-11-28-tv1-health-versions.md` | Handoff TV1: G1 đạt, health version, chưa có `model_version` (K08), câu hỏi K08/K11 |
+| `deliverables/handoff/2026-11-28-tv1-normalize-fixture-n01.md` | Handoff TV1: fixture N01 (6 cách → 1 key), cấu trúc file, đoạn mã chạy trong CI (đã chạy thử), câu hỏi K01 |
 | `deliverables/codex-inbox/README.md` | Quy ước và mẫu ghi chú cuối phiên của Codex; file đã nhập chuyển sang `processed/` |
 | `sources/00-project-brief.md` | Brief dự án, nguồn sự thật (chỉ đọc) |
 | `sources/contract-v0.1.md` | Integration Contract v0.1; §3 đã bị brief §5 thay thế (chỉ đọc) |
@@ -141,7 +142,9 @@ Git repo sản phẩm, remote `github.com/ThanhNhanNguyen2508/FraudWaveAI-Momo` 
 | `src/fraudweave/api/deps.py`, `routers/transfer.py` | `require_api_key` (`X-API-Key`), `get_service` dựng lười (thiếu cấu hình = 500, không có verdict), `POST /v1/transfer-risk`; `api/main.py` có `create_app(settings, service)` (T-19) |
 | `tests/golden/test_transfer_golden.py` | 12 golden qua HTTP trên Postgres thật (Gate G1: G1, R1, Y1, E1) (T-19) |
 | `tests/unit/test_{claim_providers,name_inquiry_mock,transfer_service,config}.py`, `tests/contract/test_transfer_endpoint.py` | T-18/T-19: alias chính xác, mock, service + audit + privacy + fail-closed, auth/envelope |
-| `.gitkeep` | Thư mục chưa dùng: `contracts/fixtures/normalize`, `src/fraudweave/integrations`, `web/safetransfer-check`, `tests/golden` |
+| `contracts/fixtures/normalize/n01_same_recipient_six_ways.json` | T-13: 1 người nhận synthetic (VCB `999000…0777`) viết 6 cách (4 nhập tay, 2 VietQR tĩnh, một có amount) → 1 `recipient_key`; khoá HMAC giả công khai trong file; 3 ca `must_differ`; TV1 chạy trong CI của họ |
+| `tests/contract/test_normalize_fixtures.py` | T-13: tính lại key bằng `hmac` thư viện chuẩn (không dùng `hashing.py`), chạy `normalize_manual_recipient` + `parse_vietqr` trên từng input |
+| `.gitkeep` | `src/fraudweave/integrations`, `web/safetransfer-check` (chưa dùng); `tests/golden/.gitkeep` còn sót dù thư mục đã có test (dọn khi tiện) |
 
 Chưa có (theo PLAN): `.worktreeinclude`, `scripts/new_worktree.ps1`, `check_prepush.ps1` (T-04b).
 

@@ -33,7 +33,7 @@
 | T-08 | Normalise STK (bỏ space/./-, 6–19 số, giữ số 0 đầu) + `recipient_key` HMAC + `account_masked` (K01) | `src/fw/common/normalize.py`, `src/fw/common/hashing.py` | `tests/unit/test_normalize.py`, `test_hashing.py` (key ổn định, không log STK thô) | T-07 | done |
 | T-09 | CRC-16/CCITT-FALSE + parser/encoder TLV EMVCo (K02) | `src/fw/common/vietqr/crc.py`, `tlv.py` | `tests/unit/test_crc.py` (check value chuẩn của "123456789" là `0x29B1`), `test_tlv.py` | T-04a | done |
 | T-10 | Parse payload VietQR: tag 38 (BIN + STK, service type), 54, 62, kiểm CRC → `NormalizedRecipient` (K02). **Phạm vi D-042/D-043:** chỉ `QRIBFTTA`, 10 BIN, Length theo ký tự, tag 54 chỉ chữ số; trích ID `VQ-xx` / `VQ-Qx` của `docs/vietqr-spec-notes.md` trong test. **Lưu ý từ review T-09:** `crc_matches` chỉ xét 8 ký tự cuối, nên T-10 phải kiểm bằng `parse_tlv` rằng tag `63` là object cuối; bắt cả `TlvError` lẫn `UnknownBankError` → `invalid_qr` / `unknown_bank` | `src/fw/common/vietqr/parse.py` | `tests/unit/test_vietqr_parse.py` + `contracts/fixtures/qr/` (hợp lệ, sai CRC → `invalid_qr`) | T-08, T-09 (nên có T-07a) | done |
-| T-13 | Fixture normalise: 1 người nhận viết 6 cách → 1 `recipient_key` (VietQR viết tay trong fixture; ca "QR có amount" dùng payload tĩnh) | `contracts/fixtures/normalize/*.json` | `tests/contract/test_normalize_fixtures.py` | T-10 | todo |
+| T-13 | Fixture normalise: 1 người nhận viết 6 cách → 1 `recipient_key` (VietQR viết tay trong fixture; ca "QR có amount" dùng payload tĩnh) | `contracts/fixtures/normalize/*.json` | `tests/contract/test_normalize_fixtures.py` | T-10 | **done** 28/11: TV3 nghiệm thu PASS; 726 pass + 159 skip (159 test cần Postgres, chưa kết nối trong phiên agent), ruff sạch; review Opus PASS |
 | T-14 | DB: engine/session, models SQLAlchemy (registry, group_trust, evidence, audit_log), Alembic migration đầu tiên, chạy trên Postgres local (docker-compose) | `src/fw/storage/db.py`, `models.py`, `migrations/` | `docker compose up -d db` + `pg_isready` OK (D-029); `tests/unit/test_migrations.py`: upgrade/downgrade trên Postgres local | T-04a | done |
 | T-15 | Seed synthetic có cờ cho **cả 12 golden** (G1, G2, R1–R4, A1–A4, Y1; mở rộng từ G1/R1/Y1 vì T-16/T-19 cần org, group, never_asks, evidence unverified) + script seed idempotent | `data/seed/*.json`, `scripts/seed_db.py` | `tests/unit/test_seed.py`: chạy 2 lần không nhân đôi; mọi bản ghi có cờ synthetic; alias không trùng nhau sau chuẩn hoá | T-14, T-08 | done |
 | T-16 | Repository đọc: registry, group trust, evidence (lọc hết hạn, lọc simulation theo `mode`) | `src/fw/registry/repository.py`, `src/fw/evidence/repository.py` | `tests/unit/test_repositories.py` | T-14 | done |
@@ -83,3 +83,10 @@ PLAN của T-20 và T-26 **giữ nguyên**. Chỉ ghi nhận để không làm l
 - **T-26** (screening cache + `screening_id`): `InMemoryScreeningCache` (TTL 30 phút, marker K07) và `resolve_claim` (screening_id thắng, lạ/hết hạn → `screening_expired`) đã có ở T-18, kèm test. Khi đến T-26: nghiệm thu phần này, làm adapter phía TV1 (K07/K08) và đổi stub sang cache thật.
 - **T-32**: `latency_ms` hiện đo trước khi ghi audit; mỗi request ~8 lượt DB, cần đo nếu Supabase đặt xa (K12).
 - **Checklist live (D-049, D-050):** không nạp seed vào live; Name Inquiry Mock không phải nguồn xác minh production (`context/git-workflow.md` §4b).
+
+## Việc dọn riêng (ngoài task, không trộn vào commit của task)
+
+Ghi 28/11 khi nghiệm thu T-13. Mỗi việc một commit nhỏ riêng trong REPO, khi TV3 cho làm:
+
+- `contracts/CONTRACT_STATUS.md` (bản sao REPO) dòng K01 còn ghi "planned `common/normalize.py`, `hashing.py`", đã cũ từ T-08. Sửa cho khớp bản HARNESS; test `test_fixtures_schema.py` chỉ so marker PENDING nên không tự bắt lỗi này.
+- `tests/golden/.gitkeep` còn sót dù thư mục đã có `test_transfer_golden.py`; xoá cho đúng `coding-standards.md` (thư mục chưa dùng mới cần `.gitkeep`).
