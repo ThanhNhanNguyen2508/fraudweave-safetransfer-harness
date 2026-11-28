@@ -1,7 +1,7 @@
 # Handoff TV1 + TV2 — `POST /v1/evidence` và quyền gửi evidence (K05 / K06) · 2026-11-28
 
 ## Tóm tắt
-- TV3 đã làm xong endpoint ghi evidence. Nó **chưa commit** (nhánh `tv3/evidence-ingestion`) và **T-21 chưa nghiệm thu**: test cần PostgreSQL chưa chạy. K05 vẫn **DRAFT-TV3**, **K06 vẫn PENDING**: TV3 chưa chốt thay hai bạn, mọi điểm dưới đây là mặc định tạm của TV3 để hai bạn xác nhận hoặc đề xuất khác.
+- TV3 đã làm xong endpoint ghi evidence. TV3 đã **nghiệm thu T-21 (28/11)** sau khi chạy test trên PostgreSQL thật; code nằm ở nhánh `tv3/evidence-ingestion` (TV3 commit/merge). K05 vẫn **DRAFT-TV3**, **K06 vẫn PENDING**: TV3 chưa chốt thay hai bạn, mọi điểm dưới đây là mặc định tạm của TV3 để hai bạn xác nhận hoặc đề xuất khác.
 - Hình dạng request/response **không đổi** so với contract §5.3. Khác biệt là **quyền gửi** và vài giới hạn (bên dưới).
 
 ## Việc hai bạn cần biết trước
@@ -37,5 +37,6 @@
 5. **K05:** có cần `phone`/`url` indicator trong MVP không? Nếu có, TV3 cần chốt dạng khoá trước.
 6. **K06:** ai được `retract` evidence (admin TV3 hay mod server)? Endpoint retract chưa có.
 
-## Chưa kiểm chứng
-- Hành vi cần PostgreSQL (dedup, race, merge, hết hạn) đã có test nhưng **chưa chạy trên PostgreSQL thật** [CHƯA KIỂM CHỨNG] cho tới khi TV3 chạy full regression.
+## Trạng thái kiểm chứng
+- [ĐÃ XÁC MINH 28/11, TV3 chạy] Dedup, race (kể cả nhánh lost-race), merge, hết hạn, golden đều pass trên PostgreSQL local. K05 vẫn DRAFT-TV3, **K06 vẫn PENDING**: các mặc định ở trên chỉ là tạm cho tới khi TV1/TV2 xác nhận.
+- Limitation đã chấp nhận trong MVP nội bộ: dòng `retracted` trả 200 với status `retracted` cho mọi key; `evidence` dùng chung bucket rate limit với `transfer-risk`; JSON hỏng không có key trả 400; path của `source_url` có thể chứa định danh; gia hạn `mod_confirmed` theo reporter mới chỉ là giải pháp tạm.

@@ -79,7 +79,7 @@ Git repo riêng, nhánh `main`, đã có remote, TV3 tự commit và push (commi
 
 ## 2. REPO — `Source code-SafeTransfer\FraudWaveAI-Momo\`
 
-Git repo sản phẩm, remote `github.com/ThanhNhanNguyen2508/FraudWaveAI-Momo` (tài khoản của TV3). Nhánh hiện tại `tv3/evidence-ingestion` (mới tạo cho T-21, chưa có thay đổi), nằm trên commit `31cf24e` (T-20; T-11, T-12, T-13, T-25 và các task trước đã commit trên chuỗi nhánh `tv3/*` [ĐÃ XÁC MINH 28/11]). `main` mới có "Initial commit", các nhánh `tv3/*` chưa merge qua PR.
+Git repo sản phẩm, remote `github.com/ThanhNhanNguyen2508/FraudWaveAI-Momo` (tài khoản của TV3). Nhánh hiện tại `tv3/group-trust-registry-api` (TV3 tạo cho task kế tiếp, chưa có thay đổi), nằm trên commit `65c2e20` (T-21, TV3 commit trên `tv3/evidence-ingestion`, đã nghiệm thu; T-20 là `31cf24e`; T-11, T-12, T-13, T-25 và các task trước đã commit trên chuỗi nhánh `tv3/*` [ĐÃ XÁC MINH 28/11]). `main` mới có "Initial commit", các nhánh `tv3/*` chưa merge qua PR.
 
 | Đường dẫn | Nội dung |
 | --- | --- |
