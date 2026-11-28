@@ -1,6 +1,6 @@
 # Nghiệm thu Gate G1 — 2026-11-28
 
-> Hạn G1: 29/11. Căn cứ: `SPEC.md` §6 (không đổi). Nhánh REPO: `tv3/api-health-ratelimit` (gồm T-25, chưa commit tại thời điểm viết; nền là `a40173e` T-18/T-19).
+> Hạn G1: 29/11. Căn cứ: `SPEC.md` §6 (không đổi). Nhánh REPO: `tv3/api-health-ratelimit` (T-25 commit `48999ae`, đã push; nền là `a40173e` T-18/T-19).
 > Người chạy test DB: **TV3**, Postgres local (docker-compose), `FW_TEST_DATABASE_URL` → `fraudweave_test`.
 
 ## Tiêu chí SPEC §6 (nguyên văn)
@@ -30,7 +30,7 @@
 
 ## Kết luận
 
-**Gate G1 đạt** theo SPEC §6. Điều kiện: TV3 commit T-25, vì phần health `policy_version` nằm trong thay đổi này.
+**Gate G1: PASS** (chính thức 28/11, trước hạn 29/11) theo SPEC §6. T-25 đã commit `48999ae` và push lên `origin/tv3/api-health-ratelimit` [ĐÃ XÁC MINH qua `git log` + tracking ref cục bộ]; HARNESS commit `ab2a7f5`.
 
 ## Ngoài phạm vi G1, ghi lại để không quên
 

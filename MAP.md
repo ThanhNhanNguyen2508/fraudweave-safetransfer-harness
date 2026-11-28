@@ -26,7 +26,7 @@
 
 ## 1. HARNESS — `Agent Workspace\`
 
-Git repo riêng, nhánh `main`, chưa có commit và chưa có remote (đợi TV3 duyệt push lần đầu). Gồm 3 tầng: nền tảng (AGENTS/CLAUDE/MAP/context/deliverables/sources), vận hành (SPEC/PLAN/CONTRACT_STATUS/.claude), đồng bộ và song song (git, git-workflow, codex-inbox).
+Git repo riêng, nhánh `main`, đã có remote, TV3 tự commit và push (commit gần nhất `ab2a7f5`, 28/11). Gồm 3 tầng: nền tảng (AGENTS/CLAUDE/MAP/context/deliverables/sources), vận hành (SPEC/PLAN/CONTRACT_STATUS/.claude), đồng bộ và song song (git, git-workflow, codex-inbox).
 
 | Đường dẫn | Nội dung |
 | --- | --- |
@@ -76,7 +76,7 @@ Git repo riêng, nhánh `main`, chưa có commit và chưa có remote (đợi TV
 
 ## 2. REPO — `Source code-SafeTransfer\FraudWaveAI-Momo\`
 
-Git repo sản phẩm, remote `github.com/ThanhNhanNguyen2508/FraudWaveAI-Momo` (tài khoản của TV3). Nhánh hiện tại `tv3/contracts-golden-fixtures` (commit `c5e92c4`, T-05 + T-06 đã commit [ĐÃ XÁC MINH 27/11]; push theo TV3 báo).
+Git repo sản phẩm, remote `github.com/ThanhNhanNguyen2508/FraudWaveAI-Momo` (tài khoản của TV3). Nhánh hiện tại `tv3/api-health-ratelimit` (commit `48999ae`, T-25; đã push [ĐÃ XÁC MINH 28/11]). `main` mới có "Initial commit", các nhánh `tv3/*` chưa merge.
 
 | Đường dẫn | Nội dung |
 | --- | --- |

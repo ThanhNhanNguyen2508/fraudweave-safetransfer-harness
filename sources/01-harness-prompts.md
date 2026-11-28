@@ -183,7 +183,7 @@ Chốt phiên: cập nhật session-log, PLAN, MAP; chạy skill contract-audit;
 ```
 
 Phiên mới. Đọc CLAUDE.md, AGENTS.md, MAP.md, PLAN.md, CONTRACT_STATUS.md và 10 dòng cuối session-log.md.
-Tôi đã commit T-15 và T16 . Làm task T-18 và T-19 bằng skill implement-task.
+Tôi đã commit T-18 và T-19 . Note khác xíu : Bạn hãy analyze lại các T nào đã xong , G1 chốt chưa và T-xx tiếp theo nên thực hiện bằng skill implement-task nha. hãy chốt chỗ này trước khi bắt đầu implements T-xx nha!
 Nếu task cần Opus (T-07a, T-17, nhãn eval T-24) mà phiên đang Sonnet thì dừng và nhắc tôi /model.
 Task chạm contract PENDING thì dùng stub + marker, KHÔNG tự chốt. Nháp thì để trong SANDBOX.
 Cuối task: gọi code-reviewer review diff, rồi cho tôi xem diff + kết quả test. Chưa commit.
