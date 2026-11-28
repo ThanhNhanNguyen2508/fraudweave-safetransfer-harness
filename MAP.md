@@ -1,6 +1,6 @@
 # MAP — bản đồ 3 thư mục
 
-> Cập nhật mỗi khi tạo, xoá hoặc di chuyển file ở **bất kỳ** thư mục nào. Lần cuối: 2026-11-28. Chỉ Claude Code sửa file này; Codex đề xuất qua `deliverables/codex-inbox/`.
+> Cập nhật mỗi khi tạo, xoá hoặc di chuyển file ở **bất kỳ** thư mục nào. Lần cuối: 2026-11-28 (phiên 16). Chỉ Claude Code sửa file này; Codex đề xuất qua `deliverables/codex-inbox/`.
 > Gốc: `C:\Users\Dell\Downloads\MomoTechDay\Implements\`
 
 ## Tìm / lưu thông tin ở đâu
@@ -70,6 +70,7 @@ Git repo riêng, nhánh `main`, đã có remote, TV3 tự commit và push (commi
 | `deliverables/handoff/2026-11-28-tv1-health-versions.md` | Handoff TV1: G1 đạt, health version, chưa có `model_version` (K08), câu hỏi K08/K11 |
 | `deliverables/handoff/2026-11-28-tv1-normalize-fixture-n01.md` | Handoff TV1: fixture N01 (6 cách → 1 key), cấu trúc file, đoạn mã chạy trong CI (đã chạy thử), câu hỏi K01 |
 | `deliverables/handoff/2026-11-28-tv2-qr-decode-upload.md` | Handoff TV2: `POST /v1/qr/decode` (multipart một trường `image`), giới hạn, bảng mã lỗi, ví dụ chạy thật, lưu ý `Content-Length`/`filename`, câu hỏi K02/K03 |
+| `deliverables/handoff/2026-11-28-tv1-tv2-evidence-endpoint-k06.md` | Handoff TV1 + TV2: evidence endpoint, chỉ recipient, quyền gửi theo client, bot phải xác minh moderator trước `mod_confirmed`, `source_url`, câu hỏi cho T-06d |
 | `deliverables/codex-inbox/README.md` | Quy ước và mẫu ghi chú cuối phiên của Codex; file đã nhập chuyển sang `processed/` |
 | `sources/00-project-brief.md` | Brief dự án, nguồn sự thật (chỉ đọc) |
 | `sources/contract-v0.1.md` | Integration Contract v0.1; §3 đã bị brief §5 thay thế (chỉ đọc) |
@@ -78,7 +79,7 @@ Git repo riêng, nhánh `main`, đã có remote, TV3 tự commit và push (commi
 
 ## 2. REPO — `Source code-SafeTransfer\FraudWaveAI-Momo\`
 
-Git repo sản phẩm, remote `github.com/ThanhNhanNguyen2508/FraudWaveAI-Momo` (tài khoản của TV3). Nhánh hiện tại `tv3/api-health-ratelimit` (commit `48999ae`, T-25; đã push [ĐÃ XÁC MINH 28/11]). `main` mới có "Initial commit", các nhánh `tv3/*` chưa merge.
+Git repo sản phẩm, remote `github.com/ThanhNhanNguyen2508/FraudWaveAI-Momo` (tài khoản của TV3). Nhánh hiện tại `tv3/evidence-ingestion` (mới tạo cho T-21, chưa có thay đổi), nằm trên commit `31cf24e` (T-20; T-11, T-12, T-13, T-25 và các task trước đã commit trên chuỗi nhánh `tv3/*` [ĐÃ XÁC MINH 28/11]). `main` mới có "Initial commit", các nhánh `tv3/*` chưa merge qua PR.
 
 | Đường dẫn | Nội dung |
 | --- | --- |
@@ -148,9 +149,13 @@ Git repo sản phẩm, remote `github.com/ThanhNhanNguyen2508/FraudWaveAI-Momo` 
 | `src/fraudweave/safetransfer/claim_providers.py` | `resolve_declared_claim`, `resolve_claim` (screening_id thắng, lạ/hết hạn → bỏ qua + `screening_expired`), `InMemoryScreeningCache` stub K07 (T-18) |
 | `src/fraudweave/safetransfer/service.py` | `TransferRiskService.assess`: normalise → claim → evidence → name inquiry → `decide` → response + audit; lỗi DB = `ApiError` 503 (T-19) |
 | `src/fraudweave/config.py` | `Settings.from_env` (DATABASE_URL, FW_HMAC_KEY, API_KEYS, FW_NAME_INQUIRY_FILE tuỳ chọn), `parse_api_keys`, `client_for_key` so sánh hằng thời gian; secret không hiện trong repr (T-19) |
-| `src/fraudweave/api/deps.py`, `routers/transfer.py` | `require_api_key` (`X-API-Key`), `get_service` dựng lười (thiếu cấu hình = 500, không có verdict), `POST /v1/transfer-risk`; `api/main.py` có `create_app(settings, service)` (T-19) |
+| `src/fraudweave/api/deps.py`, `routers/transfer.py` | `require_api_key` (`X-API-Key`), `get_service` dựng lười (thiếu cấu hình = 500, không có verdict), `POST /v1/transfer-risk`; `api/main.py` có `create_app(settings, service)` (T-19); từ T-21 `deps.py` có `get_evidence_service` và engine dùng chung cho hai service |
 | `tests/golden/test_golden_preconditions.py` | T-20: không cần DB; đối chiếu từng điều kiện tiền đề của 12 golden theo SPEC §5 với seed, name inquiry mock và fixture (R2 cá nhân + org không `never_asks`, R3 cùng group G2, R4 `never_asks=[transfer]`, A2/A4/Y1, A3 official + verified...) |
 | `tests/golden/test_transfer_golden.py` | 12 golden qua HTTP trên Postgres thật (Gate G1: G1, R1, Y1, E1) (T-19) |
+| `src/fraudweave/evidence/ingestion.py` | `EvidenceIngestionService.ingest(request, request_id, client)` (T-21, K05; marker K06): **Source Authorization** (client từ API key, mặc định từ chối trừ `user_report`, grant qua `FW_EVIDENCE_GRANTS` trong `config.py`), kiểm `source_url` (không credentials/query/fragment), simulation chỉ dải `999000…`, status do server đặt từ `source`, dedup `(key, scam_type)` bằng INSERT ON CONFLICT + `FOR UPDATE`, merge chỉ nâng status, reporter mới gia hạn unverified, `retracted` không đổi, simulation không trộn với real; chỉ indicator `recipient`; lỗi DB = 503 (D-057 đề xuất) |
+| `src/fraudweave/evidence/lifecycle.py` | TTL verified 180 ngày / unverified 30 ngày / simulation 2999-12-31, `expires_at()`; dùng chung với seed (T-21) |
+| `src/fraudweave/api/routers/evidence.py` | `POST /v1/evidence`: `enforce_rate_limit`, 201 mới / 200 merge, `X-Request-Id` (T-21) |
+| `tests/unit/test_ingestion.py`, `tests/contract/test_evidence_endpoint.py` | T-21: quy tắc không cần DB (status, TTL, 400 trước DB, 503 không lộ STK) + 29 test cần Postgres (merge, race 6 luồng, 2 test ép nhánh lost-race, retracted, simulation, hết hạn sống lại, gia hạn, report độ tin thấp không đổi provenance); endpoint: 201/200, 401, 429, 400/422 không echo input, OpenAPI |
 | `tests/unit/test_{claim_providers,name_inquiry_mock,transfer_service,config}.py`, `tests/contract/test_transfer_endpoint.py` | T-18/T-19: alias chính xác, mock, service + audit + privacy + fail-closed, auth/envelope |
 | `contracts/fixtures/normalize/n01_same_recipient_six_ways.json` | T-13: 1 người nhận synthetic (VCB `999000…0777`) viết 6 cách (4 nhập tay, 2 VietQR tĩnh, một có amount) → 1 `recipient_key`; khoá HMAC giả công khai trong file; 3 ca `must_differ`; TV1 chạy trong CI của họ |
 | `tests/contract/test_normalize_fixtures.py` | T-13: tính lại key bằng `hmac` thư viện chuẩn (không dùng `hashing.py`), chạy `normalize_manual_recipient` + `parse_vietqr` trên từng input |

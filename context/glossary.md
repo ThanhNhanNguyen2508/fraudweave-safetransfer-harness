@@ -74,7 +74,7 @@
 | --- | --- |
 | **Evidence source** | `mod_confirmed`, `user_report`, `public_warning`, `curated_feed`, `simulation` (người gọi khai) |
 | **Evidence status** | `verified`, `unverified`, `simulation`, `retracted` (server tự đặt, không phải người gọi) |
-| Quy tắc status | `mod_confirmed` hoặc `public_warning` có `source_url` → verified; `user_report` → unverified; `simulation` → simulation |
+| Quy tắc status | `mod_confirmed`, `curated_feed` (dữ liệu đội tự kiểm) hoặc `public_warning` có `source_url` → verified; `user_report` → unverified; `simulation` → simulation. Chỉ client được cấp quyền (`FW_EVIDENCE_GRANTS`) mới gửi được source khác `user_report` (D-057) |
 | **Dedup key** | `(indicator.key, scam_type)`. Merge cập nhật `last_seen`, `distinct_reporters`, chỉ được nâng status; `retracted` chỉ admin |
 | **TTL** | verified 180 ngày; unverified 30 ngày (gia hạn khi có reporter mới); simulation không hết hạn nhưng có cờ |
 | **`scam_type`** | `impersonation_org`, `impersonation_role`, `fake_fundraising`, `investment`, `job_task`, `phishing_link`, `loan`, `other` |
