@@ -113,6 +113,9 @@ Git repo sản phẩm, remote `github.com/ThanhNhanNguyen2508/FraudWaveAI-Momo` 
 | `src/fraudweave/common/reasons.py` | Reason codes + toàn bộ copy tiếng Việt cho người dùng (`message_vi`, `build_contradiction`) (T-17) |
 | `tests/unit/test_{policy,reasons}.py` | Golden inputs viết tay + 7 luật + bất biến chạy vét cạn 7.290 tổ hợp (T-17) |
 | `src/fraudweave/common/text.py` | `normalize_text()` chuẩn hoá alias (chữ thường, bỏ dấu, gộp khoảng trắng); T-18 dùng lại |
+| `src/fraudweave/common/vietqr/encode.py` | `encode_vietqr(bank_bin, account_no, *, amount, memo)` → payload + CRC, nghịch đảo của parser; cùng phạm vi D-042/D-043; tag theo thứ tự ID tăng dần, `01` = 11 (tĩnh) hoặc 12 (có amount) (T-11) |
+| `scripts/gen_demo_qr.py` | Ghi 3 ảnh PNG QR demo (STK synthetic của golden G1, R1, G2) vào `out/demo_qr` (git-ignored); từ chối STK ngoài dải `999000` (T-11) |
+| `tests/unit/test_{vietqr_roundtrip,gen_demo_qr}.py` | T-11: `parse(encode(x)) == x` cho cả 10 BIN, khớp Q01/Q03 từng byte và Q02 theo nội dung, lỗi đầu vào, script (PNG hợp lệ, không in STK) |
 | `src/fraudweave/common/vietqr/parse.py` | `parse_vietqr(payload, hmac_key)` → `NormalizedRecipient`; `InvalidQrError` (T-10) |
 | `contracts/fixtures/qr/*.json` | 17 payload VietQR synthetic (Q01–Q05 hợp lệ, Q10–Q21 lỗi) + kết quả mong đợi (T-10) |
 | `tests/unit/test_vietqr_parse.py`, `tests/contract/test_qr_fixtures.py` | Test parser và fixture QR, trích ID `VQ-xx` (T-10) |

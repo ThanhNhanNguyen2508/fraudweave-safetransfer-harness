@@ -45,7 +45,7 @@
 
 | ID | Mô tả | File trong REPO | Test chứng minh xong | Phụ thuộc | Trạng thái |
 | --- | --- | --- | --- | --- | --- |
-| T-11 | Encode VietQR + sinh ảnh QR demo (K02). **Ngoài G1, xong trước 1/12** | `src/fw/common/vietqr/encode.py`, `scripts/gen_demo_qr.py` | `tests/unit/test_vietqr_roundtrip.py`: `parse(encode(x)) == x` | T-10 | todo |
+| T-11 | Encode VietQR + sinh ảnh QR demo (K02). **Ngoài G1, xong trước 1/12** | `src/fw/common/vietqr/encode.py`, `scripts/gen_demo_qr.py` | `tests/unit/test_vietqr_roundtrip.py`: `parse(encode(x)) == x` | T-10 | **done** 28/11: TV3 nghiệm thu PASS; 839 pass + 159 skip (159 test cần Postgres, chưa kết nối trong phiên agent), ruff sạch, 5/5 mutant bị bắt; review Opus PASS |
 | T-12 | Decode ảnh → payload (opencv `QRCodeDetector`) + `POST /v1/qr/decode` (K02: định dạng upload với TV2 **stub trước**, tạm nhận multipart). **Ngoài G1, xong trước 1/12** | `src/fw/common/vietqr/decode_image.py`, `src/fw/api/routers/qr.py` | `tests/unit/test_decode_image.py` dùng ảnh sinh từ T-11; `tests/contract/test_qr_endpoint.py` | T-11 | todo |
 | T-20 | Seed + fixture cho 8 golden còn lại (G2, R2, R3, R4, A1, A2, A3, A4) | `data/seed/*.json`, `contracts/fixtures/transfer/` | `tests/golden/test_transfer_golden.py` pass **đủ 11 + A4** | T-19 | todo |
 | T-21 | `POST /v1/evidence`: validate, dedup `(key, scam_type)`, status do server đặt, TTL, merge chỉ nâng status (K05; trường từ Guardian/mod/Báo cáo **stub trước** K06) | `src/fw/evidence/ingestion.py`, `src/fw/api/routers/evidence.py` | `tests/unit/test_ingestion.py`, `tests/contract/test_evidence_endpoint.py` | T-16 | todo |
